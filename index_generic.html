@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<style>
+body {
+    background-color: #6f8b56;
+    font-family: Arial,Helvetica,sans-serif;
+    height: 100%;
+    margin: 0;
+    width: 100%;
+    position: fixed;
+}
+</style>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-16437379-22"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-16437379-22');
+</script>
+<!-- End Google Analytics -->
+
+<script src="https://browser.sentry-cdn.com/5.8.0/bundle.min.js" integrity="sha384-qlxNoEAgNliJy7zXiR+uKx/fFAimdeVfEOK0SA5/wrXLioMmASbjvfVAMaQFKVI6" crossorigin="anonymous">
+</script>
+<script>
+Sentry.onLoad(function () {
+  Sentry.init({
+    dsn: 'https://d704ab4977d344e59cc14f9f8d67e219@sentry.io/272462',
+    release: '1.2.247',
+    ignoreErrors: [
+    "[ciliz.preloader] Login error",
+    // VK at Android strange audio events (wrapper?)
+    "unmuteAudio is not defined",
+    "muteAudio is not defined",
+    // OK frame js code error
+    "Cannot read property 'style' of undefined",
+    // Sentry crashes itself on some events (crossdomain?)
+    "TypeError: Illegal invocation",
+    // OK failed to process Chromium internal postMessage
+    "TypeError: c.data.split is not a function",
+    // MM failed to process Chromium internal postMessage
+    "a.split is not a function",
+    // OK sometimes try to track yandex events, but fails
+    "Can't find variable: yndx_svtn_e",
+    // OK container error
+    "Cannot read property 'getAttribute' of undefined",
+    "Cannot call method 'getAttribute' of undefined",
+    // Sentry catcher error on previous OK container event
+    "hookAppData is not defined",
+    "'hookAppData' is undefined",
+    "Can't find variable: hookAppData"
+]
+  });
+});
+
+function onLoadError(e, url) {
+    var h = window['webkit'] && webkit.messageHandlers;
+    if (h && h.main)
+        h.main.postMessage({ type: 'showError' });
+};
+window.addEventListener('error', onLoadError,  true);
+function start() {
+    window.removeEventListener('error', onLoadError, true);
+    preload();
+}
+</script>
+
+
+<script src="preloader.118d9cac72a0.js?56e01fc1435d683804c1"></script>
+
+
+<link href="preloader.118d9cac72a0.css?56e01fc1435d683804c1" rel="stylesheet">
+
+</head>
+<body onload="start();">
+</body>
+</html>

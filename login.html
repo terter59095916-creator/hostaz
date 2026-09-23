@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Şüşə Fırlanır</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#0a0806">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{
+    --bg:#0a0806;
+    --gold:#e8c56b;
+    --gold-bright:#ffe8a8;
+    --gold-dim:#8a7440;
+    --text:#f2ead9;
+    --muted:#8f8574;
+    --border:rgba(232,197,107,0.22);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    font-family:'Manrope',sans-serif;
+    color:var(--text);
+    background:var(--bg);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+  .bg{
+    position:fixed; inset:0; z-index:0;
+    background:
+      radial-gradient(50% 40% at 50% 0%, rgba(232,197,107,0.10), transparent 65%),
+      radial-gradient(60% 50% at 15% 100%, rgba(120,90,20,0.10), transparent 60%),
+      var(--bg);
+  }
+  .vignette{
+    position:fixed; inset:0; z-index:2; pointer-events:none;
+    box-shadow: inset 0 0 180px 60px rgba(0,0,0,.75);
+  }
+  #dust-canvas{ position:fixed; inset:0; z-index:1; pointer-events:none; }
+  .stage{
+    position:relative; z-index:3; min-height:100vh;
+    display:flex; align-items:center; justify-content:center; padding:32px 20px;
+  }
+  .bottle-wrap{ position:relative; width:120px; height:120px; margin:0 auto 14px; display:flex; align-items:center; justify-content:center; }
+  .bottle-wrap svg{ width:60px; height:60px; animation:spin-bottle 7s cubic-bezier(.45,.05,.55,.95) infinite; filter:drop-shadow(0 0 16px rgba(232,197,107,.6)); }
+  .bottle-wrap.fast svg{ animation-duration:.7s; }
+  @keyframes spin-bottle{ 0%{transform:rotate(0deg);} 45%{transform:rotate(360deg);} 55%{transform:rotate(360deg);} 100%{transform:rotate(720deg);} }
+  .bottle-ring{ position:absolute; inset:0; border-radius:50%; border:1px solid var(--border); }
+  .bottle-ring::before{ content:''; position:absolute; inset:-8px; border-radius:50%; border:1px dashed rgba(232,197,107,.15); }
+  .eyebrow{ text-align:center; letter-spacing:.18em; text-transform:uppercase; font-size:11px; font-weight:700; color:var(--gold-dim); margin-bottom:8px; }
+  h1.title{ text-align:center; font-size:28px; margin:0 0 26px; font-weight:800; letter-spacing:.02em; color:var(--gold-bright); text-shadow:0 0 30px rgba(232,197,107,.25); font-family:'Cinzel',serif; }
+  .card{
+    width:100%; max-width:380px;
+    background:linear-gradient(180deg, rgba(20,18,16,.92), rgba(10,8,6,.95));
+    border:1px solid var(--border); border-radius:18px; padding:26px 24px; backdrop-filter:blur(8px);
+    box-shadow:0 24px 70px rgba(0,0,0,.6), 0 0 0 1px rgba(232,197,107,.06) inset;
+  }
+  .tabs{ display:flex; gap:6px; margin-bottom:18px; background:rgba(255,255,255,.03); border-radius:12px; padding:4px; border:1px solid rgba(232,197,107,.1); }
+  .tab{ flex:1; text-align:center; padding:9px 0; border-radius:9px; cursor:pointer; font-weight:700; font-size:13px; color:var(--muted); transition:.2s; }
+  .tab.active{ background:rgba(232,197,107,.12); color:var(--gold-bright); }
+  input,select{ width:100%; padding:12px 14px; margin-bottom:10px; background:rgba(255,255,255,.03); border:1px solid rgba(232,197,107,.15); border-radius:10px; color:var(--text); font-size:14px; font-family:inherit; }
+  input:focus,select:focus{ outline:1px solid var(--gold); outline-offset:1px; border-color:transparent; }
+  input::placeholder{ color:var(--muted); }
+  .btn{ width:100%; padding:13px 0; border:none; border-radius:11px; font-weight:800; font-size:15px; cursor:pointer; font-family:inherit; background:linear-gradient(135deg, var(--gold-bright), var(--gold-dim)); color:#241c0a; margin-top:4px; box-shadow:0 8px 24px rgba(232,197,107,.22); transition:transform .15s; }
+  .btn:active{ transform:scale(.98); }
+  .btn:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .divider{ display:flex; align-items:center; gap:10px; margin:16px 0 12px; color:var(--muted); font-size:12px; }
+  .divider::before,.divider::after{ content:''; flex:1; height:1px; background:rgba(232,197,107,.12); }
+  #google-btn-holder{ display:flex; justify-content:center; }
+  .err{ color:#e88a6b; font-size:13px; margin-top:10px; min-height:16px; text-align:center; }
+  .ok-msg{ color:var(--gold); font-size:13px; margin-top:10px; min-height:16px; text-align:center; }
+  .hidden{ display:none !important; }
+  .dash{ width:100%; max-width:420px; }
+  .avatar-zone{ text-align:center; margin-bottom:18px; position:relative; }
+  .avatar-circle{
+    width:96px; height:96px; border-radius:50%; margin:0 auto 10px;
+    background:linear-gradient(150deg, rgba(232,197,107,.15), rgba(0,0,0,.4));
+    border:2px solid var(--border); display:flex; align-items:center; justify-content:center;
+    overflow:hidden; cursor:pointer; position:relative; box-shadow:0 0 30px rgba(232,197,107,.15);
+  }
+  .avatar-circle img{ width:100%; height:100%; object-fit:cover; }
+  .avatar-circle .placeholder{ font-size:34px; color:var(--gold-dim); }
+  .avatar-edit-badge{
+    position:absolute; bottom:2px; right:calc(50% - 48px + 2px); width:26px; height:26px; border-radius:50%;
+    background:var(--gold); display:flex; align-items:center; justify-content:center; font-size:13px;
+    border:2px solid var(--bg); color:#241c0a;
+  }
+  #avatar-input{ display:none; }
+  .name-row{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:2px; }
+  .display-name{ font-family:'Cinzel',serif; font-weight:700; font-size:18px; color:var(--gold-bright); }
+  .edit-name-btn{ background:none; border:none; color:var(--gold-dim); cursor:pointer; font-size:13px; text-decoration:underline; }
+  .name-edit-row{ display:flex; gap:8px; margin-top:8px; }
+  .name-edit-row input{ margin-bottom:0; }
+  .name-edit-row button{ white-space:nowrap; width:auto; padding:0 14px; }
+  .crystal-chip{
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    background:rgba(232,197,107,.08); border:1px solid rgba(232,197,107,.28);
+    padding:8px 16px; border-radius:999px; font-weight:800; font-size:14px; color:var(--gold); margin:14px auto 0; width:fit-content;
+  }
+  .crystal-chip svg{ width:15px; height:15px; }
+  .dash-card{
+    background:linear-gradient(180deg, rgba(20,18,16,.9), rgba(10,8,6,.94));
+    border:1px solid var(--border); border-radius:18px; padding:24px; margin-top:20px; text-align:center;
+    box-shadow:0 20px 60px rgba(0,0,0,.55);
+  }
+  .games-label{ font-size:12px; text-transform:uppercase; letter-spacing:.14em; color:var(--muted); font-weight:700; margin-bottom:16px; }
+  .play-btn{
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    background:rgba(232,197,107,.05); border:1px solid var(--border); border-radius:16px; padding:22px 18px; cursor:pointer; width:100%;
+    transition:.18s; text-decoration:none;
+  }
+  .play-btn:hover{ background:rgba(232,197,107,.10); transform:translateY(-2px); box-shadow:0 10px 30px rgba(232,197,107,.12); }
+  .play-btn svg{ width:44px; height:44px; filter:drop-shadow(0 0 12px rgba(232,197,107,.4)); }
+  .play-btn .name{ font-weight:800; font-size:15px; color:var(--gold-bright); font-family:'Cinzel',serif; }
+  .play-btn .sub{ font-size:12px; color:var(--muted); }
+  .logout-link{ display:block; text-align:center; margin-top:16px; font-size:12px; color:var(--muted); text-decoration:underline; cursor:pointer; background:none; border:none; font-family:inherit; }
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <canvas id="dust-canvas"></canvas>
+  <div class="vignette"></div>
+
+  <div class="stage">
+    <div id="auth-view">
+      <div class="bottle-wrap" id="bottle-anim">
+        <div class="bottle-ring"></div>
+        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#e8c56b" d="M4.5,94.8a15.69,15.69,0,0,0,0,22l38,37.85a15.45,15.45,0,0,0,22,0L116.1,103a36.68,36.68,0,0,0,8.65-38.15L139,50.5a14.94,14.94,0,0,0,6.65-4l7.9-8a15.24,15.24,0,0,0,4.5-11,15.6,15.6,0,0,0-4.6-11.05L141.65,4.6A15.13,15.13,0,0,0,130.55,0,14.82,14.82,0,0,0,119.4,4.7l-7.9,7.9a14.74,14.74,0,0,0-3.8,7.05L93.25,34.1A34.42,34.42,0,0,0,82.2,32.35a35.84,35.84,0,0,0-14,2.8,37,37,0,0,0-11.9,8L4.5,94.8"/>
+        </svg>
+      </div>
+      <div class="eyebrow">Butilochka</div>
+      <h1 class="title">Şüşə Fırlanır</h1>
+      <div class="card">
+        <div class="tabs">
+          <div class="tab active" id="tab-login" onclick="switchTab('login')">Daxil ol</div>
+          <div class="tab" id="tab-register" onclick="switchTab('register')">Qeydiyyat</div>
+        </div>
+        <div id="login-form">
+          <input id="login-username" placeholder="İstifadəçi adı" autocomplete="username" />
+          <input id="login-password" type="password" placeholder="Parol" autocomplete="current-password" />
+          <button class="btn" onclick="login()">Daxil ol</button>
+        </div>
+        <div id="register-form" class="hidden">
+          <input id="reg-username" placeholder="İstifadəçi adı" autocomplete="username" />
+          <input id="reg-password" type="password" placeholder="Parol" autocomplete="new-password" />
+          <select id="reg-gender">
+            <option value="">Cinsi seç</option>
+            <option value="male">Kişi</option>
+            <option value="female">Qadın</option>
+          </select>
+          <button class="btn" onclick="register()">Qeydiyyatdan keç</button>
+        </div>
+        <div class="divider">və ya</div>
+        <div id="google-btn-holder">
+          <div id="g_id_onload"
+               data-client_id="47413688547-qug79v2eb2ld23hk1siq3eo4gdkbkoql.apps.googleusercontent.com"
+               data-callback="handleCredentialResponse"
+               data-auto_prompt="false"></div>
+          <div class="g_id_signin" data-type="standard" data-size="large" data-theme="filled_black" data-text="signin_with" data-shape="pill" data-logo_alignment="left"></div>
+        </div>
+        <div class="err" id="auth-error"></div>
+      </div>
+    </div>
+
+    <div id="dash-view" class="dash hidden">
+      <div class="avatar-zone">
+        <div class="avatar-circle" id="avatar-circle" onclick="document.getElementById('avatar-input').click()">
+          <span class="placeholder" id="avatar-placeholder">👤</span>
+          <img id="avatar-img" class="hidden" />
+        </div>
+        <div class="avatar-edit-badge">✎</div>
+        <input type="file" id="avatar-input" accept="image/*" onchange="onAvatarSelected(event)" />
+        <div class="name-row">
+          <div>
+            <div class="display-name" id="dash-username"></div>
+            <div style="font-size:11px; color:var(--gold-dim);">ID: <span id="dash-userid"></span></div>
+          </div>
+          <button class="edit-name-btn" onclick="toggleNameEdit()">dəyiş</button>
+        </div>
+        <div class="name-edit-row hidden" id="name-edit-row">
+          <input id="name-edit-input" placeholder="Yeni ad" maxlength="30" />
+          <button class="btn" onclick="saveName()">Saxla</button>
+        </div>
+        <div class="name-edit-row hidden" id="status-edit-row">
+          <input id="status-edit-input" placeholder="Status (maks 30 simvol)" maxlength="30" />
+          <button class="btn" onclick="saveStatus()">Saxla</button>
+        </div>
+        <button class="edit-name-btn" onclick="toggleStatusEdit()">status yaz</button>
+        <div class="crystal-chip">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2 3 9l9 13 9-13-9-7Z" fill="#e8c56b"/></svg>
+          <span id="dash-crystals">0</span>
+        </div>
+        <div class="ok-msg" id="profile-msg"></div>
+      </div>
+      <div class="dash-card">
+        <div class="games-label">Oyunlarım</div>
+        <a href="/game" class="play-btn">
+          <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+            <path fill="#e8c56b" d="M4.5,94.8a15.69,15.69,0,0,0,0,22l38,37.85a15.45,15.45,0,0,0,22,0L116.1,103a36.68,36.68,0,0,0,8.65-38.15L139,50.5a14.94,14.94,0,0,0,6.65-4l7.9-8a15.24,15.24,0,0,0,4.5-11,15.6,15.6,0,0,0-4.6-11.05L141.65,4.6A15.13,15.13,0,0,0,130.55,0,14.82,14.82,0,0,0,119.4,4.7l-7.9,7.9a14.74,14.74,0,0,0-3.8,7.05L93.25,34.1A34.42,34.42,0,0,0,82.2,32.35a35.84,35.84,0,0,0-14,2.8,37,37,0,0,0-11.9,8L4.5,94.8"/>
+          </svg>
+          <span class="name">Şüşə Fırlanır</span>
+          <span class="sub">Oynamaq üçün toxun</span>
+        </a>
+      </div>
+      <button class="logout-link" onclick="doLogout()">Çıxış et</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('dust-canvas');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function resize(){ w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+  window.addEventListener('resize', resize);
+  resize();
+  const count = prefersReduced ? 0 : Math.min(70, Math.floor(w/16));
+  for(let i=0;i<count;i++){
+    particles.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*1.8 + 0.4, speed: Math.random()*0.35 + 0.05, drift: (Math.random()-0.5)*0.25, alpha: Math.random()*0.5 + 0.15, twinkle: Math.random()*Math.PI*2 });
+  }
+  function tick(){
+    ctx.clearRect(0,0,w,h);
+    for(const p of particles){
+      p.y -= p.speed; p.x += p.drift; p.twinkle += 0.02;
+      if(p.y < -5){ p.y = h+5; p.x = Math.random()*w; }
+      if(p.x < -5) p.x = w+5;
+      if(p.x > w+5) p.x = -5;
+      const a = p.alpha * (0.6 + 0.4*Math.sin(p.twinkle));
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(232,197,107,${a})`; ctx.fill();
+    }
+    if(!prefersReduced) requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+function switchTab(which){
+  document.getElementById('tab-login').classList.toggle('active', which==='login');
+  document.getElementById('tab-register').classList.toggle('active', which==='register');
+  document.getElementById('login-form').classList.toggle('hidden', which!=='login');
+  document.getElementById('register-form').classList.toggle('hidden', which!=='register');
+  document.getElementById('auth-error').textContent = '';
+}
+
+let currentToken = null;
+
+function showDashboard(user){
+  document.getElementById('auth-view').classList.add('hidden');
+  document.getElementById('dash-view').classList.remove('hidden');
+  document.getElementById('dash-username').textContent = user.display_name || user.username || user.name || '';
+  if (document.getElementById('dash-userid')) document.getElementById('dash-userid').textContent = user.id || '';
+  document.getElementById('dash-crystals').textContent = (user.crystals !== undefined && user.crystals !== null) ? user.crystals : 0;
+  if (user.avatar_data){
+    document.getElementById('avatar-img').src = user.avatar_data;
+    document.getElementById('avatar-img').classList.remove('hidden');
+    document.getElementById('avatar-placeholder').classList.add('hidden');
+  }
+  loadFullProfile();
+}
+
+async function loadFullProfile(){
+  try{
+    const res = await authFetch('/api/profile/me');
+    if (!res.ok) return;
+    const p = await res.json();
+    document.getElementById('dash-username').textContent = p.display_name || p.username;
+    if (document.getElementById('dash-userid')) document.getElementById('dash-userid').textContent = p.id || '';
+    document.getElementById('dash-crystals').textContent = p.crystals || 0;
+    if (p.avatar_data){
+      document.getElementById('avatar-img').src = p.avatar_data;
+      document.getElementById('avatar-img').classList.remove('hidden');
+      document.getElementById('avatar-placeholder').classList.add('hidden');
+    }
+  }catch(e){}
+}
+
+async function authFetch(url, opts = {}){
+  opts.headers = Object.assign({}, opts.headers, { 'Authorization': 'Bearer ' + currentToken, 'Content-Type': 'application/json' });
+  return fetch(url, opts);
+}
+
+function toggleNameEdit(){
+  const row = document.getElementById('name-edit-row');
+  row.classList.toggle('hidden');
+  document.getElementById('name-edit-input').value = document.getElementById('dash-username').textContent;
+}
+function toggleStatusEdit(){
+  const row = document.getElementById('status-edit-row');
+  row.classList.toggle('hidden');
+}
+async function saveStatus(){
+  const status = document.getElementById('status-edit-input').value.trim();
+  const msg = document.getElementById('profile-msg');
+  try{
+    const res = await authFetch('/api/profile/status', { method:'POST', body: JSON.stringify({ status: status }) });
+    const data = await res.json();
+    if (res.ok){
+      document.getElementById('status-edit-row').classList.add('hidden');
+      msg.style.color = '#e8c56b';
+      msg.textContent = 'Status yenilendi';
+      setTimeout(() => msg.textContent = '', 2000);
+    } else {
+      msg.style.color = '#e88a6b';
+      msg.textContent = 'Xeta: ' + (data.error || 'bilinmir');
+    }
+  }catch(e){
+    msg.textContent = 'Server xetasi';
+  }
+}
+
+async function saveName(){
+  const name = document.getElementById('name-edit-input').value.trim();
+  const msg = document.getElementById('profile-msg');
+  if (!name) return;
+  try{
+    const res = await authFetch('/api/profile/name', { method:'POST', body: JSON.stringify({ display_name: name }) });
+    const data = await res.json();
+    if (res.ok){
+      document.getElementById('dash-username').textContent = name;
+      document.getElementById('name-edit-row').classList.add('hidden');
+      msg.style.color = '#e8c56b';
+      msg.textContent = 'Ad yeniləndi';
+      setTimeout(() => msg.textContent = '', 2000);
+    } else {
+      msg.style.color = '#e88a6b';
+      msg.textContent = 'Xəta: ' + (data.error || 'bilinmir');
+    }
+  }catch(e){
+    msg.textContent = 'Server xətası';
+  }
+}
+
+function onAvatarSelected(event){
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e){
+    const dataUrl = e.target.result;
+    document.getElementById('avatar-img').src = dataUrl;
+    document.getElementById('avatar-img').classList.remove('hidden');
+    document.getElementById('avatar-placeholder').classList.add('hidden');
+    const msg = document.getElementById('profile-msg');
+    try{
+      const res = await authFetch('/api/profile/avatar', { method:'POST', body: JSON.stringify({ avatar_data: dataUrl }) });
+      if (res.ok){
+        msg.style.color = '#e8c56b';
+        msg.textContent = 'Şəkil yükləndi';
+        setTimeout(() => msg.textContent = '', 2000);
+      } else {
+        msg.style.color = '#e88a6b';
+        msg.textContent = 'Şəkil çox böyükdür';
+      }
+    }catch(err){ msg.textContent = 'Server xətası'; }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function login(){
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errBox = document.getElementById('auth-error');
+  errBox.textContent = '';
+  if (!username || !password){ errBox.textContent = 'Bütün sahələri doldurun'; return; }
+  try{
+    const res = await fetch('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username, password }) });
+    const data = await res.json();
+    if (!res.ok){ errBox.textContent = 'Giriş xətası: ' + (data.error || 'bilinmir'); return; }
+    currentToken = data.token;
+    localStorage.setItem('authToken', data.token);
+    document.cookie = 'authToken=' + data.token + '; path=/; max-age=2592000';
+    playBottleThenDashboard(data.user);
+  }catch(e){ errBox.textContent = 'Server ilə əlaqə xətası'; }
+}
+
+async function register(){
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const gender = document.getElementById('reg-gender').value;
+  const errBox = document.getElementById('auth-error');
+  errBox.textContent = '';
+  if (!username || !password){ errBox.textContent = 'Bütün sahələri doldurun'; return; }
+  try{
+    const res = await fetch('/api/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ username, password, gender }) });
+    const data = await res.json();
+    if (!res.ok){ errBox.textContent = 'Qeydiyyat xətası: ' + (data.error || 'bilinmir'); return; }
+    switchTab('login');
+    document.getElementById('login-username').value = username;
+    errBox.style.color = '#e8c56b';
+    errBox.textContent = 'Qeydiyyat tamamlandı, indi daxil ol';
+  }catch(e){ errBox.textContent = 'Server ilə əlaqə xətası'; }
+}
+
+function handleCredentialResponse(response){
+  fetch('/api/google-login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ credential: response.credential }) })
+    .then(r => r.json()).then(data => {
+      if (data.token){
+        currentToken = data.token;
+        localStorage.setItem('authToken', data.token);
+        document.cookie = 'authToken=' + data.token + '; path=/; max-age=2592000';
+        playBottleThenDashboard({ username: data.username, crystals: 0 });
+      }
+    }).catch(() => { document.getElementById('auth-error').textContent = 'Google girişi alınmadı'; });
+}
+
+function playBottleThenDashboard(user){
+  const wrap = document.getElementById('bottle-anim');
+  if (wrap) wrap.classList.add('fast');
+  setTimeout(() => showDashboard(user), 550);
+}
+
+function doLogout(){
+  localStorage.removeItem('authToken');
+  document.cookie = 'authToken=; path=/; max-age=0';
+  location.reload();
+}
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(function(){});
+}
+document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'F12') e.preventDefault();
+  if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) e.preventDefault();
+  if (e.ctrlKey && e.key === 'u') e.preventDefault();
+});
+</script>
+</body>
+</html>

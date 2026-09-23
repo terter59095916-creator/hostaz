@@ -1,0 +1,8 @@
+function openStory(s) {
+document.getElementById('sv-avatar').src = s.user.photo_url || 'https://i.pravatar.cc/100?u=' + s.user.id;
+document.getElementById('sv-name').textContent = s.user.display_name || s.user.username;
+document.getElementById('sv-caption').textContent = s.caption || '';
+const video = document.getElementById('sv-video');
+video.src = s.url;
+document.getElementById('story-viewer').classList.add('open');
+}

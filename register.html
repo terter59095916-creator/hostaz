@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
+<title>Qeydiyyat</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    background: linear-gradient(135deg, #759951, #4a6b35);
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 360px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  }
+  h1 {
+    text-align: center;
+    font-size: 22px;
+    margin: 0 0 24px;
+    color: #333;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 6px;
+  }
+  input, select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    margin-bottom: 16px;
+    font-family: inherit;
+    background: #fff;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: #759951;
+  }
+  .gender-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .gender-option {
+    flex: 1;
+    position: relative;
+  }
+  .gender-option input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+  }
+  .gender-option label {
+    display: block;
+    text-align: center;
+    padding: 12px 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 0;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+    transition: all 0.15s;
+  }
+  .gender-option input:checked + label {
+    background: #759951;
+    border-color: #759951;
+    color: #fff;
+    font-weight: bold;
+  }
+  button {
+    width: 100%;
+    padding: 13px;
+    background: #759951;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  button:hover { background: #648441; }
+  button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .error {
+    color: #d33;
+    font-size: 13px;
+    text-align: center;
+    margin: -8px 0 16px;
+    min-height: 16px;
+  }
+  .success {
+    color: #2a7;
+    font-size: 13px;
+    text-align: center;
+    margin: -8px 0 16px;
+    min-height: 16px;
+  }
+  .link-row {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #555;
+  }
+  .link-row a { color: #759951; text-decoration: none; font-weight: bold; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Qeydiyyat</h1>
+    <div class="error" id="errorBox"></div>
+    <div class="success" id="successBox"></div>
+    <form id="registerForm">
+      <label for="username">İstifadəçi adı</label>
+      <input type="text" id="username" autocomplete="username" required minlength="3">
+
+      <label for="password">Parol</label>
+      <input type="password" id="password" autocomplete="new-password" required minlength="4">
+
+      <label>Cins</label>
+      <div class="gender-row">
+        <div class="gender-option">
+          <input type="radio" name="gender" id="genderMale" value="male" required>
+          <label for="genderMale">Kişi</label>
+        </div>
+        <div class="gender-option">
+          <input type="radio" name="gender" id="genderFemale" value="female">
+          <label for="genderFemale">Qadın</label>
+        </div>
+      </div>
+
+      <label for="birthdate">Doğum tarixi</label>
+      <input type="date" id="birthdate" required>
+
+      <button type="submit" id="submitBtn">Qeydiyyatdan keç</button>
+    </form>
+    <div class="link-row">
+      Artıq hesabın var? <a href="/login">Daxil ol</a>
+    </div>
+  </div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  var errorBox = document.getElementById('errorBox');
+  var successBox = document.getElementById('successBox');
+  var submitBtn = document.getElementById('submitBtn');
+  var username = document.getElementById('username').value.trim();
+  var password = document.getElementById('password').value;
+  var genderInput = document.querySelector('input[name="gender"]:checked');
+  var birthdate = document.getElementById('birthdate').value;
+
+  errorBox.textContent = '';
+  successBox.textContent = '';
+
+  if (!genderInput) {
+    errorBox.textContent = 'Zəhmət olmasa cinsi seçin';
+    return;
+  }
+  if (!birthdate) {
+    errorBox.textContent = 'Zəhmət olmasa doğum tarixini daxil edin';
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Göndərilir...';
+
+  try {
+    var res = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+        gender: genderInput.value,
+        birthdate: birthdate
+      })
+    });
+    var data = await res.json();
+
+    if (!res.ok) {
+      var msg = 'Xəta baş verdi';
+      if (data.error === 'user_already_exists') msg = 'Bu istifadəçi adı artıq mövcuddur';
+      else if (data.error === 'username_and_password_required') msg = 'Bütün sahələri doldurun';
+      else if (data.error === 'underage') msg = 'Qeydiyyat üçün yaş həddi kifayət deyil';
+      errorBox.textContent = msg;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Qeydiyyatdan keç';
+      return;
+    }
+
+    successBox.textContent = 'Qeydiyyat uğurludur! Yönləndirilirsiniz...';
+    setTimeout(function() {
+      window.location.href = '/login';
+    }, 1200);
+
+  } catch (err) {
+    errorBox.textContent = 'Serverə qoşulmaq mümkün olmadı';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Qeydiyyatdan keç';
+  }
+});
+</script>
+</body>
+</html>

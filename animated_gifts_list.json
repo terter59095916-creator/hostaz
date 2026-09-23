@@ -1,0 +1,422 @@
+[
+  {
+    "gift_id": 9427,
+    "effect_id": 8883,
+    "name": "Kanatlı At",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/f600a2495ab5d250e7da2066484a9383.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 9092,
+    "effect_id": 6669,
+    "name": "Ateş Anka kuşu",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/bfb8425a7e8fa03f9fec05a973a4a506.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 8651,
+    "effect_id": 23503,
+    "name": "Savaşan Şahin",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/491bbbd84842fa1089c29d6e61211bb3.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 12853,
+    "effect_id": 12230,
+    "name": "Seviye Gemisi",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/aca72c59f99d08b0c0d1cd6cc79dbb16.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 12680,
+    "effect_id": 11579,
+    "name": "Seviye Atlama Manzarası",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/52a09724bbe8d78227db67bc5fe78613.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 53761,
+    "effect_id": 21961,
+    "name": "Asya Çitası",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/a9b1ebb5262788aa8c5e92bd13392c83.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 101868,
+    "effect_id": 27367,
+    "name": "Valerian Yemini",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/8b4c99e8e50c117ce1a79c5f09eb0cca.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 8624,
+    "effect_id": 6401,
+    "name": "Zeus",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/01793f9afe15f5037a9dc10435c37c85.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 17446,
+    "effect_id": 19752,
+    "name": "Legendary Aegis",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/58e7fd8ef5df902013f7d8c600d2c476.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 18338,
+    "effect_id": 21267,
+    "name": "Siber Kükreyiş",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/e36175fdd1bdcda3716a857a509042b2.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 59712,
+    "effect_id": 23815,
+    "name": "Kral Leonardo",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/6e89cc0269bbd2190499368a2c0ce250.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 115549,
+    "effect_id": 23765,
+    "name": "Red Devil Corgi",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/28b39c9cbca8643bc31776dfed95ec94.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 10517,
+    "effect_id": 7118,
+    "name": "Çöl Kurdu",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/ae6cb704ca336271b4f4799675229eeb.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 59994,
+    "effect_id": 16122,
+    "name": "Tezahürat Yapan Taraftarlar",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/f8801f079c04aa58e0e732340f393740.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 101857,
+    "effect_id": 27366,
+    "name": "Fırtına Kılıcı",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/42e35e23a5439831c470ed784c470a5c.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 677594,
+    "effect_id": 33335,
+    "name": "Corgi's Drone Show",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/f301d715e8f34d713c6d5b9cfa14fd28.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 547121,
+    "effect_id": 33405,
+    "name": "Çöl Kurdu",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/17d17b4d431c84fc47988da1db8bea90.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 19134,
+    "effect_id": 6718,
+    "name": "Paris",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/f7a810a338bc0e69709badd3a596559c.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 8603,
+    "effect_id": 13972,
+    "name": "Leopar",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/3d837cfcac70929abc0f45e4dc7cee04.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 17710,
+    "effect_id": 19898,
+    "name": "Topluluk Efsaneleri",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/d5e6590f0ee4ab5f5c33df7fe1cb174c.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 59711,
+    "effect_id": 23816,
+    "name": "Işık Kalesi",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/3c6e2297ca0ddd194653cae1d3baaffa.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 59710,
+    "effect_id": 23817,
+    "name": "Zamanı Geri Sarma Cihazı",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/5048798ca9ee16042152157bad492e47.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 105610,
+    "effect_id": 23478,
+    "name": "Gol Tekrarı-ABD",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/23bdd4cc4095faef63c2cfbbb529a4af.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 547119,
+    "effect_id": 33401,
+    "name": "Siyah Kurt",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/548fafa2e2afb44a36865cb5c34bc61f.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 18339,
+    "effect_id": 21266,
+    "name": "Şampiyon Julius",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/78260c7f1dac82bd979279b5e04bffeb.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 9532,
+    "effect_id": 7790,
+    "name": "Parlak Parla",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/d4234483e15952a992ae58a088291be1.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 101862,
+    "effect_id": 27368,
+    "name": "Skyforge Kalesi",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/b8eebe2344701646d38641f0ed06816a.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 54541,
+    "effect_id": 22064,
+    "name": "Efsane Marcellus ",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/2493534c2e9d914e6b503c3a836e72e9.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 10065,
+    "effect_id": 6461,
+    "name": "Gorilla",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/57619959bddbe35d8c684750a1d41d62.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 10588,
+    "effect_id": 7148,
+    "name": "Elmas Silah",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/651e705c26b704d03bc9c06d841808f1.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 18792,
+    "effect_id": 21637,
+    "name": "LNY At",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/ec26ec5a61ad0490b70e31d6dbe128bc.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 54540,
+    "effect_id": 22084,
+    "name": "Denizaltı Krallığı",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/13f9ea9d3798f67f6d55cc612c152338.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 54727,
+    "effect_id": 22207,
+    "name": "Civciv İzdihamı",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/33798b669e13c98ea076ed8eaabc8810.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 18337,
+    "effect_id": 21268,
+    "name": "Yenilmez Çekiç",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/52d8c2e23c1800e85ad621e431220724.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 14562,
+    "effect_id": 8654,
+    "name": "Savaş Şampiyonu",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/adc6156cc7bfb49f336c6f329ebc2830.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 11838,
+    "effect_id": 7148,
+    "name": "Elmas Silah",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/651e705c26b704d03bc9c06d841808f1.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 54539,
+    "effect_id": 22067,
+    "name": "Gelgit Çağıran Üçlü Mızrak",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/7bb5606841ee8deaec981c85587ab2be.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 54728,
+    "effect_id": 22270,
+    "name": "Sinsi Jokey",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/6401ca229c2a1a07f88701da7a5b2925.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 10022,
+    "effect_id": 7016,
+    "name": "Gyeongbokgung",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/ae07f3f9fec20bc0c6801f967f162c3f.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 946670,
+    "effect_id": 119075,
+    "name": "Gündüz Lansmanı",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/627afcf868bed970c547de038246d9df.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 972138,
+    "effect_id": 114225,
+    "name": "Yuki'nin Nöbeti",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/ce72697aca20b8741b1d5bff2035db78.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 8582,
+    "effect_id": 7383,
+    "name": "TikTok Stars",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/b1667c891ed39fd68ba7252fff7a1e7c~tplv-obj.webp"
+  },
+  {
+    "gift_id": 7823,
+    "effect_id": 7575,
+    "name": "Leon ve Aslan",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/a291aedacf27d22c3fd2d83575d2bee9~tplv-obj.webp"
+  },
+  {
+    "gift_id": 6369,
+    "effect_id": 6585,
+    "name": "Aslan",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/4fb89af2082a290b37d704e20f4fe729~tplv-obj.webp"
+  },
+  {
+    "gift_id": 7610,
+    "effect_id": 23504,
+    "name": "Ejderha Alevi",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/e5af942cbf6c909da2f11950b1df8b8d.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 7400,
+    "effect_id": 7797,
+    "name": "Adam'ın Hayali",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/9a586391fbb1e21621c4203e5563a9e0~tplv-obj.webp"
+  },
+  {
+    "gift_id": 972130,
+    "effect_id": 114102,
+    "name": "Kardan Doğan Rin",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/242b68f7c08a95d710e3062a2647c027.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 59885,
+    "effect_id": 23757,
+    "name": "Zırh Dünyaya Karşı",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/0a295ee8674ff2a9a05ef8e9151bbe75.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 9466,
+    "effect_id": 6797,
+    "name": "Lunapark",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/12ecc01c2984c5d85bb508e80103a3cb.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 105817,
+    "effect_id": 23552,
+    "name": "Stad",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/5d4509c515147c6e7f563d54b2dac6ce.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 8912,
+    "effect_id": 6629,
+    "name": "Gül Nebulası",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/f722088231103b66875dae33f13f8719.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 10670,
+    "effect_id": 7185,
+    "name": "Gelecek Yolculuğu",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/dd615b15ed696ee886064d5415dab688.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 11586,
+    "effect_id": 10495,
+    "name": "Parti Hiç Bitmesin",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/c45505ece4a91d9c43e4ba98a000b006.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 12041,
+    "effect_id": 9623,
+    "name": "Alev Kuleleri",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/7e76f2366a3124b2f65d3903854dadb7.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 13006,
+    "effect_id": 11175,
+    "name": "At",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/588bfdd6e6943a7f2db9a983988b3367.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 13008,
+    "effect_id": 11385,
+    "name": "Kar Leoparı",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/7697f1ab61de520b4ef5fd3cb58d6eab.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 972120,
+    "effect_id": 113874,
+    "name": "Kar Ayı Şemsiyesi",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/dd59e39090e22d3c46353f8e997daa3c.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 12922,
+    "effect_id": 9651,
+    "name": "Şahin",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/1d91543decd90e6905aa134ca01a9a43.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 13469,
+    "effect_id": 8947,
+    "name": "Henry",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/3cb4ecd1293e05cf5a0a3f42b27206dc.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 8916,
+    "effect_id": 6609,
+    "name": "Leon ve Lili",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/6958244f3eeb69ce754f735b5833a4aa.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 9467,
+    "effect_id": 6795,
+    "name": "Leopar Lili",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/7be03e1af477d1dbc6eb742d0c969372.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 10669,
+    "effect_id": 7183,
+    "name": "Gelecek Şehri",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/963b7c25aa2cedc0de22358342645e87.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 10672,
+    "effect_id": 7181,
+    "name": "Yeni Şehirde Sam",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/291de897e4a8c3b72c358a9734c5b7d8.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 11585,
+    "effect_id": 10724,
+    "name": "Sıkı Çalış Daha Sıkı Eğlen",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/3257e15b3f6697aed88b4ac51b816603.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 59884,
+    "effect_id": 23528,
+    "name": "Yenilenmiş Zırh",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/c3a6635093aade8983cbeebd356343ee.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 8469,
+    "effect_id": 6433,
+    "name": "Kurt",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/resource/002d5e13fd6cd18b7574b43dc4fd13ae.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 14384,
+    "effect_id": 13850,
+    "name": "Sage'in Serüveni",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/ea291160b9b69dc5d13938433ba0fae9.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 6646,
+    "effect_id": 7568,
+    "name": "Yavru Kedi Leon",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/a7748baba012c9e2d98a30dce7cc5a27~tplv-obj.webp"
+  },
+  {
+    "gift_id": 9468,
+    "effect_id": 8869,
+    "name": "Ritmik Ayı",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/alisg/webcast-sg/resource/380ced1977319859807292ce490993d2.png~tplv-obj.webp"
+  },
+  {
+    "gift_id": 6820,
+    "effect_id": 8000,
+    "name": "Balina Dalışı",
+    "icon": "https://p16-webcast.tiktokcdn.com/img/maliva/webcast-va/46fa70966d8e931497f5289060f9a794~tplv-obj.webp"
+  }
+]

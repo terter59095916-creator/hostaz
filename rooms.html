@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="az">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Otaqlar — Gecə Otağı</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #100B1E;
+            --panel: #1B1430;
+            --panel-2: #241C3D;
+            --violet: #7C5CFC;
+            --violet-deep: #5B3FE0;
+            --coral: #FF6F91;
+            --gold: #F5B84E;
+            --text: #F3EFFA;
+            --text-dim: #A79FC2;
+            --online: #4ADE80;
+            --radius-lg: 22px;
+            --radius-md: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        body {
+            background: radial-gradient(120% 100% at 50% -10%, #241a3f 0%, var(--bg) 55%);
+            font-family: 'Manrope', sans-serif;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+        }
+
+        .phone {
+            width: 100%;
+            max-width: 420px;
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 20px 4px;
+            flex-shrink: 0;
+        }
+
+        .header-title {
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .header-sub {
+            color: var(--text-dim);
+            font-size: 12.5px;
+            margin-top: 3px;
+        }
+
+        .logout-btn {
+            background: var(--panel);
+            color: var(--text-dim);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 20px;
+            padding: 9px 14px;
+            font-family: 'Manrope';
+            font-weight: 700;
+            font-size: 12.5px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .logout-btn:active {
+            transform: scale(0.96);
+        }
+
+        .room-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .room-card {
+            background: linear-gradient(165deg, #241C3D 0%, #150F26 100%);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: var(--radius-lg);
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            cursor: pointer;
+            transition: transform .12s ease;
+        }
+
+        .room-card:active {
+            transform: scale(0.98);
+        }
+
+        .room-card-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #8a6bff, #5B3FE0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .room-card-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .room-card-name {
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            font-size: 15.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .room-card-meta {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot-live {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--coral);
+            box-shadow: 0 0 8px var(--coral);
+            flex-shrink: 0;
+        }
+
+        .room-card-enter {
+            font-size: 18px;
+            color: var(--text-dim);
+            flex-shrink: 0;
+        }
+
+        .room-list-empty {
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 13px;
+            padding: 40px 0;
+        }
+
+        /* ================= Otaq qrup qutuları ================= */
+
+        .room-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .room-group-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--text);
+            padding: 0 2px;
+        }
+
+        .room-group-title img {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .room-group-box {
+            background: rgba(27, 20, 48, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: var(--radius-lg);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .room-card-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ================= Gecə fonu — hərəkət edən ay və ulduzlar ================= */
+
+        .night-sky {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .night-sky .moon {
+            position: absolute;
+            top: 7%;
+            left: -80px;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #fff9e8, var(--gold) 70%);
+            box-shadow: 0 0 40px rgba(245, 184, 78, 0.55);
+            animation: moonDrift 50s linear infinite;
+        }
+
+        .night-sky .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #fff;
+            border-radius: 50%;
+            animation: starTwinkle 3s ease-in-out infinite;
+        }
+
+        @keyframes moonDrift {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(100vw + 160px));
+            }
+        }
+
+        @keyframes starTwinkle {
+            0%,
+            100% {
+                opacity: 0.15;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="night-sky" id="nightSky" aria-hidden="true">
+        <div class="moon"></div>
+    </div>
+    <div class="phone">
+        <div class="header">
+            <div>
+                <div class="header-title">🌙 Otaqlar</div>
+                <div class="header-sub">Daxil olmaq istədiyiniz otağı seçin</div>
+            </div>
+            <button class="logout-btn" onclick="backToProfile()">Çıxış</button>
+        </div>
+
+        <div class="room-list" id="roomList">
+            <div class="room-list-empty">Yüklənir...</div>
+        </div>
+    </div>
+
+    <script>
+        const currentUser = sessionStorage.getItem('username') || localStorage.getItem('username') || localStorage.getItem('authToken');
+        if (!currentUser) {
+            window.location.href = '/login-v2';
+        }
+
+        function backToProfile() {
+            window.location.href = '/profile-v2';
+        }
+
+        function enterRoom(id) {
+            window.location.href = '/room?id=' + encodeURIComponent(id);
+        }
+
+        async function loadRooms() {
+            try {
+                const res = await fetch('/api/rooms');
+                const data = await res.json();
+                const rooms = data.rooms || [];
+                const listEl = document.getElementById('roomList');
+
+                if (!rooms.length) {
+                    listEl.innerHTML = '<div class="room-list-empty">Otaq tapılmadı.</div>';
+                    return;
+                }
+
+                const ytRooms = rooms.filter(r => !r.isVideoCallRoom);
+                const videoCallRooms = rooms.filter(r => r.isVideoCallRoom);
+
+                function renderCard(room, iconSrc) {
+                    return `
+            <div class="room-card" role="link" tabindex="0" onclick="enterRoom('${room.id}')" onkeydown="if(event.key==='Enter')enterRoom('${room.id}')">
+              <div class="room-card-icon"><img src="${iconSrc}" alt="${room.isVideoCallRoom ? 'Görüntülü söhbət' : 'Klip otağı'}" onerror="this.hidden=true;this.parentElement.textContent='${room.isVideoCallRoom ? '📹' : '🎵'}'"></div>
+              <div class="room-card-body">
+                <div class="room-card-name">${escapeHtml(room.name)}</div>
+                <div class="room-card-meta"><span class="dot-live"></span>👥 ${room.viewerCount || 0} · ${room.isVideoCallRoom ? 'Kamera və səs' : 'Səs və klip'}</div>
+              </div>
+              <div class="room-card-enter">›</div>
+            </div>
+          `;
+                }
+
+                let html = '';
+                if (ytRooms.length) {
+                    html += `
+            <div class="room-group">
+              <div class="room-group-title"><img src="/room-assets/youtube-icon.png" alt="">Video Otaqlar</div>
+              <div class="room-group-box">
+                ${ytRooms.map(r => renderCard(r, '/room-assets/youtube-icon.png')).join('')}
+              </div>
+            </div>
+          `;
+                }
+                if (videoCallRooms.length) {
+                    html += `
+            <div class="room-group">
+              <div class="room-group-title"><img src="/room-assets/camera-icon.png" alt="">Görüntülü Otaq</div>
+              <div class="room-group-box">
+                ${videoCallRooms.map(r => renderCard(r, '/room-assets/camera-icon.png')).join('')}
+              </div>
+            </div>
+          `;
+                }
+                listEl.innerHTML = html;
+            } catch (e) {
+                document.getElementById('roomList').innerHTML = '<div class="room-list-empty">Otaqlar yüklənərkən xəta baş verdi.</div>';
+            }
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str == null ? '' : String(str);
+            return div.innerHTML;
+        }
+
+        loadRooms();
+        // Otaqlardakı canlı istifadəçi sayı köhnəlməsin deyə siyahını dövri olaraq yeniləyirik
+        setInterval(loadRooms, 5000);
+
+        // Gecə fonu üçün təsadüfi ulduzlar yaradırıq
+        (function spawnStars() {
+            const sky = document.getElementById('nightSky');
+            const count = 40;
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = (Math.random() * 3) + 's';
+                star.style.animationDuration = (2 + Math.random() * 3) + 's';
+                sky.appendChild(star);
+            }
+        })();
+    </script>
+</body>
+
+</html>

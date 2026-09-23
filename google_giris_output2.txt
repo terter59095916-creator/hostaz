@@ -1,0 +1,1 @@
+"e {\r\n            if (picture && picture !== user.avatar_data) {\r\n                db.prepare('UPDATE users SET avatar_data = ?, display_name = ? WHERE id = ?').run(picture, name || user.display_name, user.id);\r\n            }\r\n            console.log('WS: Google ile giris - ' + ema"

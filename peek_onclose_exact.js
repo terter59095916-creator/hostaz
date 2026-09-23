@@ -1,0 +1,4 @@
+﻿const fs = require("fs");
+const c = fs.readFileSync("C:\\bottle-server-kiraye\\game_v2\\preloader_new.js", "utf8");
+const idx = c.indexOf("this.socket.onclose = function");
+console.log(JSON.stringify(c.substring(idx, idx + 250)));

@@ -1,0 +1,32 @@
+} else if (msg.type === 'kickout_start') {
+    if (!wsUser || !Boolean(wsUser.is_vip) || !ws.gameRoom) return;
+    const targetIdKO = Number(msg.target_id);
+    let targetWsKO = null;
+    ws.gameRoom.players.forEach((p, cws) => { if (Number(p.id) === targetIdKO) targetWsKO = cws; });
+    if (!targetWsKO) return;
+    if (!ws.gameRoom.pendingKickouts) ws.gameRoom.pendingKickouts = new Map();
+    if (ws.gameRoom.pendingKickouts.has(targetIdKO)) return;
+    const deadlineTs = Date.now() + 30000;
+    const timeoutHandle = setTimeout(() => {
+      const room = ws.gameRoom;
+      if (!room || !room.pendingKickouts || !room.pendingKickouts.has(targetIdKO)) return;
+      room.pendingKickouts.delete(targetIdKO);
+      const rejoinUntil = new Date(Date.now() + 15 * 60 * 1000).toISOString();
+      db.prepare('UPDATE users SET kicked_until = ? WHERE id = ?').run(rejoinUntil, targetIdKO);
+      broadcastToRoom(room, null, { type: 'kickout_kicked', target_id: String(targetIdKO) });
+      try { targetWsKO.send(encodeMessage({ type: 'kickout_info', kickout_ts: rejoinUntil, packet: targetWsKO.packetCounter=(targetWsKO.packetCounter||1000)+1 })); } catch(e) {}
+      if (targetWsKO.gameRoom) removePlayerFromRoom(targetWsKO.gameRoom, targetWsKO);
+      console.log('WS: kickout - istifadeci kenarlasdirildi - target=' + targetIdKO);
+    }, 30000);
+    ws.gameRoom.pendingKickouts.set(targetIdKO, { initiatorId: wsUser.id, timeoutHandle, deadlineTs });
+    broadcastToRoom(ws.gameRoom, null, { type: 'kickout_started', target_id: String(targetIdKO), initiator_id: String(wsUser.id), initiator_name: wsUser.display_name || wsUser.username, deadline_ts: deadlineTs });
+    console.log('WS: kickout baslandi - initiator=' + wsUser.username + ' target=' + targetIdKO);
+} else if (msg.type === 'kickout_save') {
+    if (!wsUser || !ws.gameRoom || !ws.gameRoom.pendingKickouts) return;
+    const targetIdSave = Number(msg.target_id);
+    const pending = ws.gameRoom.pendingKickouts.get(targetIdSave);
+    if (!pending) return;
+    clearTimeout(pending.timeoutHandle);
+    ws.gameRoom.pendingKickouts.delete(targetIdSave);
+    broadcastToRoom(ws.gameRoom, null, { type: 'kickout_saved', target_id: String(targetIdSave), saver_id: String(wsUser.id), saver_name: wsUser.display_name || wsUser.username });
+    console.log('WS: kickout xilas edildi - saver=' + wsUser.username + ' target=' + targetIdSave);

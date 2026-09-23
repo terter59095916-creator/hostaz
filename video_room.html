@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Görüntülü söhbət</title>
+<style>
+:root{color-scheme:dark;--bg:#100b1e;--panel:#211731;--muted:#b7aaca;--accent:#ae8bff}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Arial,sans-serif;background:var(--bg);color:#f7f3ff}button,input{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:default}[hidden]{display:none!important}
+.app{width:100%;max-width:1120px;height:100vh;height:100dvh;height:var(--app-height,100dvh);margin:auto;display:flex;flex-direction:column;padding:env(safe-area-inset-top) 12px 0;overflow:hidden}
+header{display:flex;align-items:center;gap:10px;min-height:68px;flex-shrink:0}.back,.exit{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:12px;color:#fff;text-decoration:none;background:#ffffff10;flex-shrink:0;border:0;font-size:20px}.exit{font-size:13px;width:auto;padding:0 12px}.heading{flex:1;min-width:0}h1{font-size:17px;margin:0 0 4px}#status{font-size:12px;color:var(--muted)}.count{font-size:12px;color:var(--accent);white-space:nowrap}
+.stage{flex:1;min-height:90px;overflow:auto;overscroll-behavior:contain}.welcome{height:100%;min-height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding:20px}.welcome img{width:84px;height:84px;border-radius:24px}.welcome p{color:var(--muted);line-height:1.5;max-width:300px;margin:0;font-size:14px}.join{border:0;border-radius:16px;background:#b294ff;color:#180d2d;padding:14px 22px;font-weight:bold}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-content:start;padding:4px 0 12px}.grid.single{grid-template-columns:minmax(0,1fr)}
+.tile{position:relative;aspect-ratio:3/4;min-width:0;max-height:62vh;overflow:hidden;border:2px solid transparent;border-radius:18px;background:radial-gradient(ellipse at top,#392547,#191125);isolation:isolate}.grid.single .tile{aspect-ratio:4/3}.tile.speaking{border-color:#a88bff;box-shadow:0 0 14px #ae8bff55}.placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}.placeholder img{width:64px;height:64px;border-radius:50%;object-fit:cover}.initial{width:64px;height:64px;border-radius:50%;background:#654689;display:grid;place-items:center;font-size:28px;font-weight:bold}.tile video{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;background:#171021}.tile.local video{transform:scaleX(-1)}.tile.local.rear video{transform:none}.tile-label{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;gap:6px;min-height:38px;padding:12px 8px 7px;background:linear-gradient(transparent,#000b);font-size:12px}.tile-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tile-mic{font-size:12px}
+.controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 0;flex-shrink:0}.control{min-width:44px;min-height:42px;border:1px solid #ffffff20;background:#2e203e;color:#fff;border-radius:14px;padding:8px 12px;font-size:19px}.control.off{background:#662c43;border-color:#fe87ab}.audio-unlock{font-size:12px;color:#1b0b29;background:#d1baff;border:0;border-radius:10px;padding:8px 10px}.chat{flex-shrink:0;padding:0 0 max(8px,env(safe-area-inset-bottom))}.chat-log{max-height:100px;overflow:auto;font-size:12px;line-height:1.5;overflow-wrap:anywhere}.chat-log p{margin:5px 0}.chat-log b{color:#d6beff}.chat-form{display:flex;gap:8px;padding-top:7px}.chat-form input{min-width:0;flex:1;border:1px solid #ffffff16;background:#241831;color:white;border-radius:24px;padding:11px 14px;font-size:16px;outline:0}.chat-form button{width:42px;border:0;border-radius:50%;background:#7450b7;color:white;font-size:19px}.toast{position:fixed;z-index:5;bottom:110px;left:50%;transform:translateX(-50%);width:max-content;max-width:90vw;border-radius:14px;background:#38254f;padding:12px 16px;font-size:13px;box-shadow:0 6px 22px #0007}.audio-bin{position:absolute;left:0;bottom:0;width:1px;height:1px;overflow:hidden}
+@media(min-width:700px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.grid.single{max-width:660px;margin:auto}.tile{aspect-ratio:4/3}.app{padding-left:24px;padding-right:24px}.chat-log{max-height:120px}}
+@media(max-height:480px){header{min-height:45px}h1{font-size:14px}.controls{padding:4px 0}.control{min-height:34px;padding:3px 10px}.chat-log{max-height:44px}.tile{aspect-ratio:4/3}.welcome{min-height:0;padding:4px;gap:8px}.welcome img{display:none}}
+</style>
+</head>
+<body>
+<main class="app">
+ <header><a class="back" id="roomsBack" href="/rooms" aria-label="Otaqlar">‹</a><div class="heading"><h1>Görüntülü söhbət</h1><div id="status" role="status">Kamera və səs ilə söhbət</div></div><span class="count" id="count">0/12</span><a class="exit" id="exit" href="/profile-v2">Çıxış</a></header>
+ <section class="stage">
+  <div class="welcome" id="welcome"><img src="/room-assets/camera-icon.png" alt="Görüntülü otaq"><p>Kamera və mikrofonunu aç, otaqdakı oyunçularla söhbət et.</p><button class="join" id="join" type="button">Söhbətə qoşul</button></div>
+  <div class="grid" id="grid" hidden></div>
+ </section>
+ <div class="controls"><button class="control off" id="mic" disabled aria-label="Mikrofonu aç" aria-pressed="false">🎤</button><button class="control off" id="camera" disabled aria-label="Kameranı aç" aria-pressed="false">📹</button><button class="control" id="flip" disabled aria-label="Kameranı çevir">↻</button><button class="audio-unlock" id="audioUnlock" hidden>Səsləri aç</button></div>
+ <section class="chat"><div class="chat-log" id="chatLog" aria-live="polite"></div><form class="chat-form" id="chatForm"><input id="chatInput" placeholder="Mesaj yaz..." maxlength="240" autocomplete="off" disabled aria-label="Mesaj"><button id="send" disabled aria-label="Mesaj göndər">➤</button></form></section>
+</main>
+<div class="audio-bin" id="audioBin"></div><div id="toast" class="toast" role="status" hidden></div>
+<script src="/vendor/livekit-client-2.15.6.umd.min.js"></script>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const roomId = new URLSearchParams(location.search).get('id') || '6';
+  let room = null, joining = false, leaving = false, facing = 'user', toastTimer;
+  const tiles = new Map(), audioTracks = new Map(), textDecoder = new TextDecoder(), textEncoder = new TextEncoder();
+  const recentMessages = new Set();
+  function toast(text) { $('toast').textContent = text; $('toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').hidden = true, 3500); }
+  function viewport() { document.documentElement.style.setProperty('--app-height', Math.round(window.visualViewport ? window.visualViewport.height : window.innerHeight) + 'px'); }
+  viewport(); window.addEventListener('resize', viewport); if (window.visualViewport) window.visualViewport.addEventListener('resize', viewport);
+  function photoOf(participant) { try { const photo = JSON.parse(participant.metadata || '{}').photo || ''; return /^\/api\/avatar\/\d+$/.test(photo) ? photo : ''; } catch (_) { return ''; } }
+  function ensureTile(participant) {
+    let tile = tiles.get(participant.identity);
+    if (!tile) {
+      tile = document.createElement('article'); tile.className = 'tile'; tile.dataset.identity = participant.identity;
+      tile.innerHTML = '<div class="placeholder"><span class="initial"></span><img hidden alt=""></div><div class="tile-label"><span class="tile-name"></span><span class="tile-mic"></span></div>';
+      tiles.set(participant.identity, tile); $('grid').append(tile);
+    }
+    const isLocal = participant === room.localParticipant;
+    tile.classList.toggle('local', isLocal); tile.classList.toggle('rear', isLocal && facing === 'environment');
+    tile.querySelector('.tile-name').textContent = (participant.name || 'Oyunçu') + (isLocal ? ' · Sən' : '');
+    tile.querySelector('.initial').textContent = (participant.name || 'O').slice(0, 1).toUpperCase();
+    const photo = photoOf(participant), img = tile.querySelector('.placeholder img');
+    if (photo && img.getAttribute('src') !== photo) { img.onerror = () => { img.dataset.failed = photo; img.hidden = true; tile.querySelector('.initial').hidden = false; }; img.src = photo; }
+    img.hidden = !photo || img.dataset.failed === photo;
+    tile.querySelector('.initial').hidden = !img.hidden;
+    const camera = participant.getTrackPublication(LivekitClient.Track.Source.Camera);
+    const video = tile.querySelector('video');
+    if (video) video.hidden = !camera || camera.isMuted || !camera.track;
+    tile.querySelector('.placeholder').hidden = Boolean(video && !video.hidden);
+    tile.querySelector('.tile-mic').textContent = participant.isMicrophoneEnabled ? '🎤' : '🔇';
+    updateCount(); return tile;
+  }
+  function updateCount() { $('count').textContent = tiles.size + '/12'; $('grid').classList.toggle('single', tiles.size < 2); }
+  function attachTrack(track, publication, participant) {
+    if (!track || !participant || !room) return;
+    const tile = ensureTile(participant);
+    if (track.kind === LivekitClient.Track.Kind.Video && publication.source === LivekitClient.Track.Source.Camera) {
+      let video = tile.querySelector('video');
+      if (!video) { video = document.createElement('video'); video.autoplay = true; video.playsInline = true; video.muted = true; tile.insertBefore(video, tile.firstChild); }
+      if (video._track !== track) { if (video._track) video._track.detach(video); track.attach(video); video._track = track; }
+      // Video has no audio track; a separate audio element plays each remote microphone once.
+      video.muted = true; video.hidden = publication.isMuted;
+      video.play().catch(() => {});
+    } else if (track.kind === LivekitClient.Track.Kind.Audio && participant !== room.localParticipant) {
+      const key = participant.identity + ':' + publication.trackSid;
+      if (!audioTracks.has(key)) {
+        const audio = document.createElement('audio'); audio.autoplay = true; audio.volume = 1; audio.dataset.identity = participant.identity;
+        $('audioBin').append(audio); track.attach(audio); audioTracks.set(key, { track, audio });
+        audio.play().catch(() => $('audioUnlock').hidden = false);
+      }
+    }
+    ensureTile(participant); updateControls();
+  }
+  function detachTrack(track) {
+    if (!track) return;
+    track.detach().forEach(element => element.remove());
+    for (const [key, item] of audioTracks) if (item.track === track) audioTracks.delete(key);
+  }
+  function removeParticipant(participant) {
+    const tile = tiles.get(participant.identity);
+    if (tile) { const v = tile.querySelector('video'); if (v && v._track) v._track.detach(v); tile.remove(); }
+    tiles.delete(participant.identity);
+    for (const [key, item] of audioTracks) if (item.audio.dataset.identity === participant.identity) { item.track.detach(item.audio); item.audio.remove(); audioTracks.delete(key); }
+    updateCount();
+  }
+  function updateControls() {
+    const connected = room && room.state === 'connected';
+    for (const id of ['mic', 'camera', 'chatInput', 'send']) $(id).disabled = !connected;
+    $('flip').disabled = !connected || !room.localParticipant.isCameraEnabled;
+    if (!connected) return;
+    for (const [id, enabled, label] of [['mic', room.localParticipant.isMicrophoneEnabled, 'Mikrofonu'], ['camera', room.localParticipant.isCameraEnabled, 'Kameranı']]) {
+      $(id).classList.toggle('off', !enabled); $(id).setAttribute('aria-pressed', String(enabled)); $(id).setAttribute('aria-label', label + (enabled ? ' bağla' : ' aç')); $(id).title = $(id).getAttribute('aria-label');
+    }
+  }
+  function clearMedia() {
+    for (const item of audioTracks.values()) { item.track.detach(item.audio); item.audio.remove(); } audioTracks.clear();
+    for (const tile of tiles.values()) { const video = tile.querySelector('video'); if (video && video._track) video._track.detach(video); tile.remove(); } tiles.clear(); updateCount();
+  }
+  function addChat(text, participant, id) {
+    if (recentMessages.has(id)) return; recentMessages.add(id); if (recentMessages.size > 100) recentMessages.delete(recentMessages.values().next().value);
+    const p = document.createElement('p'), name = document.createElement('b'); name.textContent = (participant.name || 'Oyunçu') + ': ';
+    p.append(name, document.createTextNode(String(text).slice(0, 240))); $('chatLog').append(p);
+    while ($('chatLog').children.length > 50) $('chatLog').firstElementChild.remove(); $('chatLog').scrollTop = $('chatLog').scrollHeight;
+  }
+  function bindEvents(activeRoom) {
+    const E = LivekitClient.RoomEvent;
+    activeRoom.on(E.ParticipantConnected, ensureTile);
+    activeRoom.on(E.ParticipantDisconnected, removeParticipant);
+    activeRoom.on(E.TrackSubscribed, attachTrack);
+    activeRoom.on(E.TrackUnsubscribed, (track, publication, participant) => { detachTrack(track); if (participant) ensureTile(participant); });
+    activeRoom.on(E.LocalTrackPublished, publication => attachTrack(publication.track, publication, activeRoom.localParticipant));
+    activeRoom.on(E.LocalTrackUnpublished, publication => { detachTrack(publication.track); ensureTile(activeRoom.localParticipant); updateControls(); });
+    for (const event of [E.TrackMuted, E.TrackUnmuted]) activeRoom.on(event, (publication, participant) => { ensureTile(participant); updateControls(); });
+    activeRoom.on(E.ActiveSpeakersChanged, speakers => { const ids = new Set(speakers.map(p => p.identity)); for (const [id, tile] of tiles) tile.classList.toggle('speaking', ids.has(id)); });
+    activeRoom.on(E.AudioPlaybackStatusChanged, () => $('audioUnlock').hidden = activeRoom.canPlaybackAudio);
+    activeRoom.on(E.Reconnecting, () => { $('status').textContent = 'Bağlantı bərpa olunur...'; updateControls(); });
+    activeRoom.on(E.Reconnected, () => { $('status').textContent = 'Otağa qoşuldun'; updateControls(); });
+    activeRoom.on(E.Disconnected, () => {
+      if (room !== activeRoom) return;
+      clearMedia(); updateControls(); $('audioUnlock').hidden = true;
+      if (!leaving) { $('status').textContent = 'Bağlantı kəsildi'; $('welcome').hidden = false; $('grid').hidden = true; $('join').disabled = false; $('join').textContent = 'Yenidən qoşul'; }
+    });
+    activeRoom.on(E.DataReceived, (payload, participant, kind, topic) => {
+      if (topic !== 'video-room-chat' || !participant || payload.byteLength > 2048) return;
+      try { const message = JSON.parse(textDecoder.decode(payload)); if (typeof message.text === 'string' && typeof message.id === 'string') addChat(message.text, participant, participant.identity + ':' + message.id); } catch (_) {}
+    });
+  }
+  async function join() {
+    if (joining || room && room.state === 'connected') return;
+    if (!window.LivekitClient) return toast('Video hissəsi yüklənmədi. Səhifəni yenilə.');
+    const authToken = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    if (!authToken) { location.href = '/login-v2'; return; }
+    joining = true; leaving = false; $('join').disabled = true; $('status').textContent = 'Qoşulur...';
+    try {
+      if (room) { await room.disconnect(); clearMedia(); }
+      const response = await fetch('/api/video-room/' + encodeURIComponent(roomId) + '/token', { method: 'POST', headers: { Authorization: 'Bearer ' + authToken }, cache: 'no-store' });
+      if (response.status === 401) { location.href = '/login-v2'; return; }
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'video_room_service_unavailable');
+      if (leaving) return;
+      room = new LivekitClient.Room({ adaptiveStream: true, dynacast: true, videoCaptureDefaults: { resolution: { width: 640, height: 360, frameRate: 20 }, facingMode: 'user' }, audioCaptureDefaults: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, publishDefaults: { simulcast: true, videoCodec: 'vp8', videoEncoding: { maxBitrate: 500000, maxFramerate: 20 } } });
+      bindEvents(room); await room.connect(data.url, data.token, { autoSubscribe: true });
+      if (leaving) { await room.disconnect(); return; }
+      $('welcome').hidden = true; $('grid').hidden = false; ensureTile(room.localParticipant);
+      for (const participant of room.remoteParticipants.values()) { ensureTile(participant); for (const pub of participant.trackPublications.values()) if (pub.track) attachTrack(pub.track, pub, participant); }
+      const media = await Promise.allSettled([room.localParticipant.setCameraEnabled(true), room.localParticipant.setMicrophoneEnabled(true)]);
+      if (leaving) { await room.disconnect(); return; }
+      $('status').textContent = 'Otağa qoşuldun';
+      const denied = []; if (media[0].status === 'rejected') denied.push('kamera'); if (media[1].status === 'rejected') denied.push('mikrofon');
+      if (denied.length) toast(denied.join(' və ') + ' açılmadı. İcazəni verib düyməyə bas.');
+      await room.startAudio().catch(() => $('audioUnlock').hidden = false);
+      updateControls();
+    } catch (error) {
+      if (room) await room.disconnect(); clearMedia(); updateControls();
+      $('welcome').hidden = false; $('grid').hidden = true;
+      $('status').textContent = error.message === 'video_room_not_configured' ? 'Otağın video bağlantısı hələ hazır deyil' : 'Qoşulmaq alınmadı. Yenidən cəhd et.';
+      $('join').textContent = 'Yenidən qoşul';
+    } finally { joining = false; $('join').disabled = false; }
+  }
+  async function toggle(kind) {
+    if (!room || room.state !== 'connected') return;
+    const button = $(kind); button.disabled = true;
+    try {
+      if (kind === 'camera') await room.localParticipant.setCameraEnabled(!room.localParticipant.isCameraEnabled);
+      else await room.localParticipant.setMicrophoneEnabled(!room.localParticipant.isMicrophoneEnabled);
+      ensureTile(room.localParticipant);
+    } catch (_) { toast((kind === 'camera' ? 'Kamera' : 'Mikrofon') + ' açılmadı. Brauzer icazəsini yoxla.'); }
+    finally { updateControls(); }
+  }
+  async function leave(destination) { leaving = true; try { if (room) await room.disconnect(); } finally { clearMedia(); if (destination) location.href = destination; } }
+  $('join').onclick = join; $('mic').onclick = () => toggle('mic'); $('camera').onclick = () => toggle('camera');
+  $('flip').onclick = async () => { if (!room) return; const pub = room.localParticipant.getTrackPublication(LivekitClient.Track.Source.Camera); if (!pub || !pub.track) return; $('flip').disabled = true; const next = facing === 'user' ? 'environment' : 'user'; try { await pub.track.restartTrack({ facingMode: next }); facing = next; ensureTile(room.localParticipant); } catch (_) { toast('Digər kamera açılmadı'); } finally { updateControls(); } };
+  $('audioUnlock').onclick = async () => { if (room) { await room.startAudio(); for (const {audio} of audioTracks.values()) audio.play().catch(() => {}); } };
+  $('chatForm').onsubmit = async event => {
+    event.preventDefault(); const text = $('chatInput').value.trim(); if (!text || !room || room.state !== 'connected') return;
+    const id = crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2);
+    $('send').disabled = true;
+    try { await room.localParticipant.publishData(textEncoder.encode(JSON.stringify({ id, text: text.slice(0, 240) })), { reliable: true, topic: 'video-room-chat' }); addChat(text, room.localParticipant, room.localParticipant.identity + ':' + id); $('chatInput').value = ''; }
+    catch (_) { toast('Mesaj göndərilmədi'); } finally { updateControls(); }
+  };
+  for (const id of ['roomsBack', 'exit']) $(id).onclick = event => { event.preventDefault(); leave($(id).getAttribute('href')); };
+  window.addEventListener('pagehide', () => { leaving = true; if (room) room.disconnect(); });
+})();
+</script>
+</body>
+</html>

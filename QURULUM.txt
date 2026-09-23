@@ -1,0 +1,44 @@
+OTAQLAR, GÖRÜNTÜLÜ SÖHBƏT VƏ ŞƏKİLLƏR — 06.09.2026
+
+Quraşdırma
+1. ZIP-i aç. İçindəki faylları və room-assets/vendor qovluqlarını
+   C:\bottle-server-kiraye qovluğuna köçür; eyni adlı faylları Replace et.
+2. PowerShell-də:
+
+cd C:\bottle-server-kiraye
+git add server.js video_room_server.js video_room.html rooms.html night_room.html profile_v2.html live_v2.html room-assets vendor/livekit-client-2.15.6.umd.min.js vendor/LiveKit-LICENSE public/live-gift-videos
+git commit -m "Fix room images and add video chat"
+git push origin main
+
+Railway deploy bitdikdən sonra səhifəni tam yenilə.
+Kompüterdəki serveri də yeniləmək üçün: pm2 restart bottle-server
+
+Görüntülü otaq
+Railway Variables-də əvvəldən yaratdığın LIVEKIT_URL, LIVEKIT_API_KEY və
+LIVEKIT_API_SECRET bu serverdə də olmalıdır. LIVEKIT_URL bulud layihəsinin
+wss:// ünvanıdır. Yeni Node paketi quraşdırmaq lazım deyil; LiveKit brauzer
+kitabxanası bu ZIP-dədir, server mövcud jsonwebtoken paketindən istifadə edir.
+
+/rooms səhifəsində Görüntülü otaq seç, Söhbətə qoşul düyməsinə bas,
+kamera və mikrofon icazəsini ver. Bu otaqda 12 nəfərə qədər kamera/səs və
+yazılı söhbət var. Kameranı, mikrofonu və ön/arxa kameranı düymələrlə dəyiş.
+Klip bölməsi yalnız əvvəlki musiqi otaqlarındadır.
+
+Dəyişikliklər
+- Otaqların siyahısındakı şəkillər düzgün server ünvanından açılır.
+- Profilin Şüşəni fırlat şəklində butulka görünür; düymə /game-v2 açır.
+- Otaqların Çıxış düyməsi /profile-v2 açır, giriş məlumatını silmir.
+- Canlı yayımın PK və qonaq düymələri “Yaxında işləyəcək” göstərir.
+- Əvvəlki musiqi otaqlarının hədiyyə, oturacaq və aşağı chat düzəlişləri saxlanılıb.
+
+Yoxlama
+Kodun sintaksisi, serverin LiveKit token imzası, şəkil ünvanları, profilə
+çıxış, oyun keçidi və PK/qonaq bildirişləri yoxlanılıb. Görüntülü otağın
+düymələri və mobil/planşet ölçüləri sınaq media iştirakçıları ilə yoxlanılıb.
+Həqiqi telefonlararası səs və video burada yoxlanılmayıb. Deploydan sonra
+iki ayrı hesabla həmin görüntülü otağa qoşulub hər iki tərəfin səsini və
+görüntüsünü yoxla.
+
+Paket kirayə layihəsinin oyun fayllarına toxunmadan, ən son “clean-chat-bottom” otaq versiyasının üzərində hazırlanıb.
+Mövcud hədiyyə videoları serverdəki public/live-gift-videos qovluğunda qalır.
+vendor/LiveKit-LICENSE — daxil edilmiş LiveKit brauzer SDK-sının lisenziyası.

@@ -1,0 +1,78 @@
+} else if (msg.type === 'live_send_gift') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser) return;
+    const giftPrice = Number(msg.gift_price) || 1;
+    const userRow = db.prepare('SELECT live_tokens FROM users WHERE id = ?').get(wsUser.id);
+    if (!userRow || userRow.live_tokens < giftPrice) {
+      ws.send(encodeMessage({ type: 'live_error', reason: 'insufficient_tokens', packet: ws.packetCounter=(ws.packetCounter||1000)+1 }));
+      return;
+    }
+    db.prepare('UPDATE users SET live_tokens = live_tokens - ? WHERE id = ?').run(giftPrice, wsUser.id);
+    db.prepare('UPDATE users SET gift_level_score = gift_level_score + ? WHERE id = ?').run(giftPrice, wsUser.id);
+    const updatedTok = db.prepare('SELECT live_tokens FROM users WHERE id = ?').get(wsUser.id);
+    ws.send(encodeMessage({ type: 'live_tokens_update', live_tokens: updatedTok.live_tokens, packet: ws.packetCounter=(ws.packetCounter||1000)+1 }));
+    const payload = { type: 'live_gift_received', gift_id: msg.gift_id, gift_image: msg.gift_image, sender_name: wsUser.display_name || wsUser.username, sender_id: String(wsUser.id), target_user_id: String(msg.target_user_id) };
+    stream.seats.forEach(seat => { try { seat.ws.send(encodeMessage(Object.assign({}, payload, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+    stream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, payload, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+    if (stream.pk && stream.pk.active) {
+      const targetSide = (String(msg.target_user_id) === String(stream.pk.hostIdA)) ? 'A' : 'B';
+      if (targetSide === 'A') stream.pk.scoreA += giftPrice; else stream.pk.scoreB += giftPrice;
+      const otherStream = liveStreamsMap.get(stream.pk.otherStreamId);
+      const pkPayload = { type: 'pk_score_update', score_a: stream.pk.scoreA, score_b: stream.pk.scoreB };
+      stream.seats.forEach(seat => { try { seat.ws.send(encodeMessage(Object.assign({}, pkPayload, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+      stream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, pkPayload, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+      if (otherStream) {
+        otherStream.seats.forEach(seat => { try { seat.ws.send(encodeMessage(Object.assign({}, pkPayload, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+        otherStream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, pkPayload, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+      }
+    }
+    console.log('WS: canli hediyye gonderildi - stream=' + stream.id + ' gift=' + msg.gift_id + ' price=' + giftPrice);
+} else if (msg.type === 'start_pk') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser || stream.hostId !== wsUser.id) return;
+    const oppStream = liveStreamsMap.get(Number(msg.opponent_stream_id));
+    if (!oppStream) { ws.send(encodeMessage({ type: 'live_error', reason: 'not_found', packet: ws.packetCounter=(ws.packetCounter||1000)+1 })); return; }
+    const oppHost = oppStream.seats.get(oppStream.hostId);
+    if (!oppHost) return;
+    oppHost.ws.send(encodeMessage({ type: 'pk_invite', stream_id: stream.id, host_name: (stream.seats.get(stream.hostId)||{}).name, host_photo: (stream.seats.get(stream.hostId)||{}).photo, packet: oppHost.ws.packetCounter=(oppHost.ws.packetCounter||1000)+1 }));
+    console.log('WS: PK devet gonderildi - stream=' + stream.id + ' -> ' + oppStream.id);
+} else if (msg.type === 'respond_pk') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser || stream.hostId !== wsUser.id) return;
+    const requesterStream = liveStreamsMap.get(Number(msg.requester_stream_id));
+    if (!requesterStream) return;
+    if (!msg.accept) {
+      const reqHost = requesterStream.seats.get(requesterStream.hostId);
+      if (reqHost) try { reqHost.ws.send(encodeMessage({ type: 'pk_declined', packet: reqHost.ws.packetCounter=(reqHost.ws.packetCounter||1000)+1 })); } catch(e) {}
+      return;
+    }
+    const durationSec = 180;
+    const hostA = requesterStream.seats.get(requesterStream.hostId);
+    const hostB = stream.seats.get(stream.hostId);
+    requesterStream.pk = { active: true, hostIdA: requesterStream.hostId, hostIdB: stream.hostId, otherStreamId: stream.id, scoreA: 0, scoreB: 0, endsAt: Date.now() + durationSec * 1000 };
+    stream.pk = { active: true, hostIdA: requesterStream.hostId, hostIdB: stream.hostId, otherStreamId: requesterStream.id, scoreA: 0, scoreB: 0, endsAt: Date.now() + durationSec * 1000 };
+    const startPayload = (mine, other, otherStreamId) => ({ type: 'pk_started', opponent_stream_id: otherStreamId, opponent_host_name: other.name, opponent_host_photo: other.photo, duration_sec: durationSec });
+    const pA = startPayload(hostA, hostB, stream.id);
+    const pB = startPayload(hostB, hostA, requesterStream.id);
+    requesterStream.seats.forEach(seat => { try { seat.ws.send(encodeMessage(Object.assign({}, pA, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+    requesterStream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, pA, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+    stream.seats.forEach(seat => { try { seat.ws.send(encodeMessage(Object.assign({}, pB, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+    stream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, pB, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+    console.log('WS: PK basladi - ' + requesterStream.id + ' vs ' + stream.id);
+    setTimeout(() => {
+      const s1 = liveStreamsMap.get(requesterStream.id); const s2 = liveStreamsMap.get(stream.id);
+      if (s1 && s1.pk && s1.pk.active) {
+        const winner = s1.pk.scoreA > s1.pk.scoreB ? 'A' : (s1.pk.scoreB > s1.pk.scoreA ? 'B' : 'draw');
+        const endPayload = { type: 'pk_ended', winner, score_a: s1.pk.scoreA, score_b: s1.pk.scoreB };
+        s1.seats.forEach(seat => { try { seat.ws.send(encodeMessage(Object.assign({}, endPayload, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+        s1.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, endPayload, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+        s1.pk.active = false;
+      }
+      if (s2 && s2.pk && s2.pk.active) {
+        const winner2 = s2.pk.scoreB > s2.pk.scoreA ? 'A' : (s2.pk.scoreA > s2.pk.scoreB ? 'B' : 'draw');
+        const endPayload2 = { type: 'pk_ended', winner: winner2, score_a: s2.pk.scoreB, score_b: s2.pk.scoreA };
+        s2.seats.forEach(seat => { try { seat.ws.send(encodeMessage(Object.assign({}, endPayload2, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+        s2.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, endPayload2, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+        s2.pk.active = false;
+      }
+    }, durationSec * 1000);

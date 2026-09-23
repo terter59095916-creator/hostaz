@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bildirisler</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; color: #1a1a1a; }
+  .header { background: white; padding: 12px 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .header a { color: #ff7a00; text-decoration: none; font-weight: bold; margin-right: 16px; }
+  .container { max-width: 500px; margin: 0 auto; padding: 16px; }
+  .section { background: white; border-radius: 10px; padding: 16px; }
+  .notif-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+  .notif-row.unread { background: #fff8ee; }
+  .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #ff7a00; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; object-fit: cover; }
+  .notif-text { flex: 1; font-size: 14px; }
+</style>
+</head>
+<body>
+  <div class="header"><a href="/feed">Lent</a><a href="/game">Oyun</a><a href="/friends">Dostlar</a></div>
+  <div class="container">
+    <div class="section"><h3 style="margin-bottom:10px;">Bildirisler</h3><div id="notifList"></div></div>
+  </div>
+<script>
+  const token = localStorage.getItem('authToken');
+  if (!token) window.location.href = '/login';
+  async function apiCall(url, method) {
+    const res = await fetch(url, { method: method || 'GET', headers: { 'Authorization': 'Bearer ' + token } });
+    return res.json();
+  }
+  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  const typeText = { post_like: 'paylasimini beyendi', post_comment: 'paylasimina serh yazdi', friend_request: 'sene dostluq sorgusu gonderdi', photo_reaction: 'sekline reaksiya verdi', photo_comment: 'sekline serh yazdi' };
+  async function loadNotifs() {
+    const notifs = await apiCall('/api/notifications');
+    document.getElementById('notifList').innerHTML = notifs.length ? notifs.map(n => {
+      const initial = n.from_user ? (n.from_user.display_name || n.from_user.username || '?')[0].toUpperCase() : '?';
+      const avatarHtml = n.from_user && n.from_user.photo_url ? ('<img class="user-avatar" src="' + n.from_user.photo_url + '">') : ('<div class="user-avatar">' + initial + '</div>');
+      const name = n.from_user ? escapeHtml(n.from_user.display_name || n.from_user.username) : 'Sistem';
+      let linkUrl = '#';
+      if (n.type === 'post_like' || n.type === 'post_comment') linkUrl = '/feed';
+      else if (n.type === 'photo_reaction' || n.type === 'photo_comment') linkUrl = '/profile?id=' + (n.from_user ? n.from_user.id : '') + '&photo=' + n.ref_id;
+      else if (n.type === 'friend_request') linkUrl = '/friends';
+      const extraHtml = n.extra_text ? ('<div style="font-size:12px;color:#888;margin-top:2px;">"' + escapeHtml(n.extra_text) + '"</div>') : '';
+      return '<a href="' + linkUrl + '" style="text-decoration:none;color:inherit;"><div class="notif-row ' + (n.is_read ? '' : 'unread') + '">' + avatarHtml + '<div class="notif-text"><b>' + name + '</b> ' + (typeText[n.type] || n.type) + extraHtml + '</div></div></a>';
+    }).join('') : '<p style="color:#888;">Bildiris yoxdur</p>';
+    await apiCall('/api/notifications/mark-read', 'POST');
+  }
+  loadNotifs();
+</script>
+</body>
+</html>

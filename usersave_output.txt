@@ -1,0 +1,1 @@
+"userSave(user_id, save_referrer) {\n    const paid = this.viewer.viewer.decCurrency('gold', this.kickout.price);\n    if (!paid) return false;\n    this.send({\n      type: 'user_save',\n      user_id,\n      save_referrer,\n      expected_price: this.kickout.price\n    });\n    return true;\n  }\n  _recv_user"

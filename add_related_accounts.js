@@ -1,0 +1,23 @@
+﻿const fs = require("fs");
+const path = "server.js";
+let c = fs.readFileSync(path, "utf8");
+const marker = "app.get('/login-v2', (req, res) => {";
+const idx = c.indexOf(marker);
+console.log("Tapildi:", idx !== -1);
+const newRoute = `app.get('/api/admin/related-accounts/:userId', authLib.requireAdmin, (req, res) => {
+    const targetId = Number(req.params.userId);
+    const myBindings = db.prepare('SELECT ip_address FROM device_bindings WHERE user_id = ?').all(targetId);
+    const ips = myBindings.map(b => b.ip_address).filter(Boolean);
+    if (ips.length === 0) return res.json([]);
+    const placeholders = ips.map(() => '?').join(',');
+    const relatedBindings = db.prepare('SELECT DISTINCT user_id FROM device_bindings WHERE ip_address IN (' + placeholders + ') AND user_id != ?').all(...ips, targetId);
+    const relatedIds = relatedBindings.map(r => r.user_id);
+    if (relatedIds.length === 0) return res.json([]);
+    const idPlaceholders = relatedIds.map(() => '?').join(',');
+    const users = db.prepare('SELECT id, username, display_name, is_banned FROM users WHERE id IN (' + idPlaceholders + ')').all(...relatedIds);
+    res.json(users);
+});
+`;
+c = c.slice(0, idx) + newRoute + c.slice(idx);
+fs.writeFileSync(path, c, "utf8");
+console.log("YAZILDI");

@@ -1,0 +1,222 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lent</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; color: #1a1a1a; }
+  
+  .container { display: flex; max-width: 1100px; margin: 0 auto; gap: 16px; padding: 16px; }
+  .sidebar { width: 220px; flex-shrink: 0; }
+  .sidebar a { display: block; padding: 10px 14px; color: #333; text-decoration: none; border-radius: 8px; margin-bottom: 4px; background: white; }
+  .feed { flex: 1; }
+  .post-box { background: white; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .post-box textarea { width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; min-height: 60px; }
+  .post-box button { margin-top: 8px; background: #ff7a00; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; }
+  .post { background: white; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .post-avatar { width: 40px; height: 40px; border-radius: 50%; background: #ff7a00; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+  .post-name { font-weight: bold; }
+  .post-actions { display: flex; gap: 16px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 8px; }
+  .post-actions button { background: none; border: none; cursor: pointer; color: #666; }
+  .post-actions button.liked { color: #ff7a00; font-weight: bold; }
+  .comments { margin-top: 10px; }
+  .comment { font-size: 13px; padding: 6px 0; border-top: 1px solid #f5f5f5; }
+  .comment-input { display: flex; gap: 6px; margin-top: 8px; }
+  .comment-input input { flex: 1; border: 1px solid #ddd; border-radius: 6px; padding: 6px 10px; }
+  .rightbar { width: 220px; }
+  .rightbar .box { background: white; border-radius: 10px; padding: 16px; }
+html, body { max-width: 100%; overflow-x: hidden; }
+  @media (max-width: 768px) {
+    body { width: 100%; }
+    .container { flex-direction: column; padding: 8px; max-width: 100%; width: 100%; margin: 0; gap: 8px; }
+    .sidebar, .rightbar { width: 100%; }
+    #profileCard { padding: 12px; }
+    #profilePhoto, #profileInitial { width: 70px; height: 70px; font-size: 26px; }
+    .sidebar a { display: block; width: 100%; margin-right: 0; margin-bottom: 4px; font-size: 14px; padding: 10px 12px; }
+    .header { padding: 8px 8px; flex-wrap: nowrap; }
+    .header > div:first-child span { display: none; }
+    .header > div:first-child { flex-shrink: 0; }
+    .header > div:nth-child(2) { gap: 8px; overflow-x: auto; flex-shrink: 1; scrollbar-width: none; }
+    .header > div:nth-child(2)::-webkit-scrollbar { display: none; }
+    .header > div:nth-child(2) > div { font-size: 16px; flex-shrink: 0; }
+    .header > div:nth-child(3) { gap: 4px; flex-shrink: 0; }
+    .header > div:nth-child(3) input { display: none; }
+    .header > div:nth-child(3) #headerProfilePhoto { width: 26px; height: 26px; }
+    .post-box, .post { padding: 12px; width: 100%; }
+    .post-box textarea { font-size: 14px; width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="header" style="display:flex;align-items:center;justify-content:space-between;padding:8px 24px;background:white;box-shadow:0 1px 2px rgba(0,0,0,0.1);">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div style="width:32px;height:32px;border-radius:50%;background:#ff7a00;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;">O</div>
+      <span style="font-size:20px;font-weight:bold;color:#333;">Ureyimsen</span>
+    </div>
+    <div style="display:flex;gap:22px;align-items:center;">
+      <div onclick="window.location.href='/messages'" style="position:relative;cursor:pointer;font-size:24px;color:#666;margin-left:10px;" title="Mesajlar">&#9993;<span id="unreadBadge" style="display:none;position:absolute;top:-4px;right:-14px;background:#4caf50;color:white;font-size:10px;border-radius:8px;padding:2px 5px;line-height:1;white-space:nowrap;">0</span></div>
+      <div style="position:relative;cursor:pointer;font-size:20px;color:#666;" title="Muzakireler">&#128172;</div>
+      <div onclick="window.location.href='/notifications'" style="position:relative;cursor:pointer;font-size:20px;color:#666;" title="Bildirisler">&#128276;<span id="notifBadge" style="display:none;position:absolute;top:-4px;right:-8px;background:#4caf50;color:white;font-size:10px;border-radius:8px;padding:2px 5px;line-height:1;white-space:nowrap;">0</span></div>
+      <div onclick="window.location.href='/viewers'" style="position:relative;cursor:pointer;font-size:20px;color:#666;" title="Kimler baxdi">&#128065;<span id="viewersBadge" style="display:none;position:absolute;top:-4px;right:-8px;background:#4caf50;color:white;font-size:10px;border-radius:8px;padding:2px 5px;line-height:1;white-space:nowrap;">0</span></div>
+      
+      <div style="position:relative;cursor:pointer;font-size:20px;color:#666;" title="Video zeng">&#127909;</div>
+      <div style="position:relative;cursor:pointer;font-size:20px;color:#666;" title="Muzika">&#127925;</div>
+      <div style="position:relative;cursor:pointer;font-size:20px;color:#ccc;" title="Oynatma">&#9654;</div>
+      <div style="position:relative;cursor:pointer;font-size:20px;color:#666;" title="Teqvim">&#128197;</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <input type="text" placeholder="Saytda axtar" style="border:1px solid #ddd;background:#f0f2f5;color:#333;padding:6px 14px;border-radius:16px;width:180px;">
+      <div style="position:relative;">
+        <div id="headerProfilePhoto" onclick="toggleHeaderMenu()" style="width:32px;height:32px;border-radius:50%;background:#ddd;cursor:pointer;overflow:hidden;"></div>
+        <div id="headerMenu" style="display:none;position:absolute;top:40px;right:0;background:white;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,0.2);width:180px;z-index:100;overflow:hidden;">
+          <div onclick="window.location.href='/profile?id='+myUserId" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #eee;">Profilim</div>
+          <div onclick="doLogout()" style="padding:10px 14px;cursor:pointer;color:#e53935;">Cixis et</div>
+        </div>
+      </div>
+    </div>
+  </div><div class="container">
+    <div class="sidebar">
+      <div id="profileCard" style="background:white;border-radius:10px;padding:16px;text-align:center;margin-bottom:12px;">
+        <img id="profilePhoto" src="" style="width:100px;height:100px;border-radius:50%;object-fit:cover;display:none;margin:0 auto;">
+        <div id="profileInitial" style="width:100px;height:100px;border-radius:50%;background:#ff7a00;color:white;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:bold;margin:0 auto;">?</div>
+        <div id="profileName" style="font-weight:bold;margin-top:10px;font-size:16px;"></div>
+      </div>
+      <a href="/feed" style="font-weight:bold;background:#ffe8d1;">&#127968; Xeber Axisi</a>
+      <a href="/friends">&#128101; Dostlar</a>
+      <a href="/photos">&#128248; Fotosekil</a>
+      <a href="#">&#128101; Qruplar</a>
+      <a href="/game">&#127918; Oyunlar</a><a href="/shorts">&#127909; Qisa Video</a><a href="/live">&#128247; Canli Yayin</a>
+      <a href="#">&#127873; Hediyyeler</a>
+      <a href="#">&#128161; Tekliflar</a>
+      <a href="#">&#9634; Tetbiqler</a>
+      <a href="#">&#128149; Flort</a>
+      <a href="#">&#128196; Poster</a>
+    </div>
+    <div class="feed">
+      <div class="post-box"><textarea id="postText" placeholder="Ne dusunursen?"></textarea><button onclick="submitPost()">Paylas</button></div>
+      <div id="postsList"></div>
+    </div>
+    <div class="rightbar"><div class="box"><b>Dostlar</b></div></div>
+  </div>
+<script>
+  const token = localStorage.getItem('authToken');
+  if (!token) { window.location.href = '/login'; }
+  async function apiCall(url, method, body) {
+    const res = await fetch(url, { method: method || 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: body ? JSON.stringify(body) : undefined });
+    return res.json();
+  }
+  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  async function loadFeed() {
+    const posts = await apiCall('/api/feed');
+    const shorts = await apiCall('/api/shorts');
+    const combined = [
+      ...posts.map(p => ({ kind: 'post', data: p, ts: p.created_at })),
+      ...shorts.map(s => ({ kind: 'short', data: s, ts: s.created_at }))
+    ].sort((a, b) => new Date(b.ts) - new Date(a.ts));
+    document.getElementById('postsList').innerHTML = combined.map(item => {
+      if (item.kind === 'short') {
+        const s = item.data;
+        const initial2 = (s.user.display_name || s.user.username || '?')[0].toUpperCase();
+        const avatarHtml2 = s.user.photo_url ? ('<img src="' + s.user.photo_url + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">') : ('<div class="post-avatar">' + initial2 + '</div>');
+        return '<div class="post"><div class="post-header">' + avatarHtml2 + '<div class="post-name">' + escapeHtml(s.user.display_name || s.user.username) + '</div></div>' +
+          '<a href="/shorts" style="text-decoration:none;"><video src="' + s.url + '" style="width:100%;max-height:400px;border-radius:8px;margin-top:8px;background:black;" muted playsinline></video></a>' +
+          (s.caption ? ('<div style="margin-top:6px;">' + escapeHtml(s.caption) + '</div>') : '') +
+          '<div class="post-actions"><span>&#10084; ' + s.likes_count + '</span><span>&#128172; ' + s.comments_count + '</span></div></div>';
+      }
+      const p = item.data;
+      const initial = (p.user.display_name || p.user.username || '?')[0].toUpperCase();
+      const avatarHtml = p.user.photo_url ? ('<img src="' + p.user.photo_url + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">') : ('<div class="post-avatar">' + initial + '</div>');
+      return '<div class="post"><div class="post-header">' + avatarHtml + '<div class="post-name">' + escapeHtml(p.user.display_name || p.user.username) + '</div></div><div>' + escapeHtml(p.text) + '</div><div class="post-actions"><button class="' + (p.liked_by_me ? 'liked' : '') + '" onclick="toggleLike(' + p.id + ')">Bayendim ' + p.likes_count + '</button><button onclick="toggleComments(' + p.id + ')">Serh ' + p.comments_count + '</button></div><div class="comments" id="comments-' + p.id + '" style="display:none;"><div class="comment-input"><input type="text" id="commentInput-' + p.id + '"><button onclick="submitComment(' + p.id + ')">Gonder</button></div><div id="commentsList-' + p.id + '"></div></div></div>';
+    }).join('');
+  }
+  async function submitPost() {
+    const text = document.getElementById('postText').value;
+    if (!text.trim()) return;
+    await apiCall('/api/feed/post', 'POST', { text });
+    document.getElementById('postText').value = '';
+    loadFeed();
+  }
+  async function toggleLike(postId) { await apiCall('/api/feed/like/' + postId, 'POST'); loadFeed(); }
+  async function toggleComments(postId) {
+    const el = document.getElementById('comments-' + postId);
+    if (el.style.display === 'none') {
+      el.style.display = 'block';
+      const comments = await apiCall('/api/feed/comments/' + postId);
+      document.getElementById('commentsList-' + postId).innerHTML = comments.map(c => '<div class="comment"><b>' + escapeHtml(c.user.display_name || c.user.username) + ':</b> ' + escapeHtml(c.text) + '</div>').join('');
+    } else { el.style.display = 'none'; }
+  }
+  async function submitComment(postId) {
+    const input = document.getElementById('commentInput-' + postId);
+    const text = input.value;
+    if (!text.trim()) return;
+    await apiCall('/api/feed/comment/' + postId, 'POST', { text });
+    input.value = '';
+    loadFeed();
+  }
+  let myUserId = null;
+  function toggleHeaderMenu() {
+    const menu = document.getElementById('headerMenu');
+    menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+  }
+  document.addEventListener('click', (e) => {
+    const menu = document.getElementById('headerMenu');
+    const photo = document.getElementById('headerProfilePhoto');
+    if (menu && !menu.contains(e.target) && e.target !== photo) menu.style.display = 'none';
+  });
+  function doLogout() {
+    localStorage.removeItem('authToken');
+    window.location.href = '/login';
+  }
+  async function loadMyProfile() {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      myUserId = payload.id;
+      document.getElementById('profileName').textContent = payload.username;
+      const res = await fetch('/api/avatar/' + payload.id);
+      if (res.ok && res.status === 200) {
+        document.getElementById('profilePhoto').src = '/api/avatar/' + payload.id;
+        document.getElementById('headerProfilePhoto').style.backgroundImage = 'url(/api/avatar/' + payload.id + ')';
+        document.getElementById('headerProfilePhoto').style.backgroundSize = 'cover';
+        document.getElementById('profilePhoto').style.display = 'block';
+        document.getElementById('profileInitial').style.display = 'none';
+      } else {
+        document.getElementById('profileInitial').textContent = payload.username[0].toUpperCase();
+      }
+    } catch (e) {}
+  }
+  async function loadUnreadCount() {
+    try {
+      const convos = await fetch('/api/messages/conversations', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json());
+      const total = convos.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+      const badge = document.getElementById('unreadBadge');
+      if (total > 0) { badge.textContent = total; badge.style.display = 'block'; } else { badge.style.display = 'none'; }
+    } catch (e) {}
+  }
+  loadMyProfile();
+  loadFeed();
+  loadUnreadCount();
+  async function loadViewersCount() {
+    try {
+      const r2 = await fetch('/api/profile-viewers/unseen-count', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json());
+      const badge = document.getElementById('viewersBadge');
+      if (r2.count > 0) { badge.textContent = r2.count; badge.style.display = 'block'; } else { badge.style.display = 'none'; }
+    } catch (e) {}
+  }
+  loadViewersCount();
+  async function loadNotifCount() {
+    try {
+      const r = await fetch('/api/notifications/unread-count', { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json());
+      const badge = document.getElementById('notifBadge');
+      if (r.count > 0) { badge.textContent = r.count; badge.style.display = 'block'; } else { badge.style.display = 'none'; }
+    } catch (e) {}
+  }
+  loadNotifCount();
+  setInterval(loadNotifCount, 5000);
+  setInterval(loadViewersCount, 8000);
+  setInterval(loadUnreadCount, 5000);
+</script>
+</body>
+</html>

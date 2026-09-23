@@ -1,0 +1,5 @@
+node_modules/
+.env
+bottle.db
+bottle.db-*
+*.log

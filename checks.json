@@ -1,0 +1,42 @@
+{
+  "server_js_syntax": "passed",
+  "html_inline_scripts": "passed",
+  "night_room_max_seats": 12,
+  "night_room_features": [
+    "webrtc_voice",
+    "12_seats",
+    "chat",
+    "live_gift_catalog",
+    "gift_effect_media",
+    "youtube_search",
+    "close_search_button",
+    "youtube_current_time_sync",
+    "compact_room_header",
+    "overlay_clip_first",
+    "six_by_two_seats",
+    "profile_microphone_toggle",
+    "flat_chat_under_seats",
+    "youtube_mute_toggle",
+    "gift_chime_and_send_guard",
+    "level_1_to_50_badges_and_frames",
+    "clip_singer_song_metadata"
+  ],
+  "room_route": "/room?id=<id> -> night_room.html",
+  "live_route": "/live-v2?room=<id>",
+  "files": [
+    "server.js",
+    "rooms.html",
+    "night_room.html",
+    "live_v2.html",
+    "profile_v2.html",
+    "images.jpg",
+    "share_img.png",
+    "youtube-icon.png",
+    "camera-icon.png",
+    "tiktok_gift_catalog_full.json",
+    "live-gift-effects.json",
+    "gift-prices.json",
+    "public/live-gift-videos/",
+    "README.txt"
+  ]
+}

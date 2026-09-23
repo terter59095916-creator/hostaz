@@ -1,0 +1,1 @@
+"       } else {\n            if (photo_url && photo_url !== user.avatar_data) {\n                db.prepare('UPDATE users SET avatar_data = ?, display_name = ? WHERE id = ?').run(photo_url, displayName, user.id);\n            }\n            console.log('WS: Telegram ile giris - ' + d"

@@ -1,0 +1,1 @@
+﻿const fs = require("fs"); const path = "C:\\bottle-server\\game_v2\\yandex_v2.html"; let c = fs.readFileSync(path, "utf8"); const newV = Math.floor(Date.now()/1000); c = c.replace(/preloader_new\.js\?v=\d+/, "preloader_new.js?v=" + newV); fs.writeFileSync(path, c, "utf8"); console.log("NEW VERSION:", newV);

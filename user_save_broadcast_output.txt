@@ -1,0 +1,1 @@
+"Room, null, {\n      type: 'user_save',\n      saviour_user: { id: String(wsUser.id), name: wsUser.display_name || wsUser.username, male: wsUser.gender !== 'female' },\n      saved_user: { id: String(targetIdSave), name: savedPlayer ? savedPlayer.name : '', male: savedPlayer ? savedPlayer.male : true },\n      kickout_info: { price: 50 }\n    "

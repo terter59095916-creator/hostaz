@@ -1,0 +1,24 @@
+app.post('/api/login', async (req, res) => {
+    try {
+        const { username, password, device_id } = req.body || {};
+        if (device_id) {
+            const bannedDev = db.prepare('SELECT * FROM banned_devices WHERE device_id = ?').get(device_id);
+            if (bannedDev) return res.status(403).json({ error: 'device_banned' });
+        }
+        const user = authLib.verifyUser(username, password);
+        if (!user) {
+            return res.status(400).json({ error: 'invalid_credentials' });
+        }
+        if (device_id) {
+            const existingDevice = db.prepare('SELECT user_id FROM device_bindings WHERE device_id = ?').get(device_id);
+            if (existingDevice && existingDevice.user_id !== user.id) {
+                return res.status(403).json({ error: 'device_already_used' });
+            }
+            if (!existingDevice) {
+                try { db.prepare('INSERT INTO device_bindings (device_id, user_id, ip_address) VALUES (?, ?, ?)').run(device_id, user.id, getClientIp(req)); } catch (e) {}
+            }
+        }
+        const token = authLib.issueUserToken(user);
+        res.json({
+            message: 'login_successful',
+       

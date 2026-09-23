@@ -1,0 +1,10 @@
+﻿const fs = require("fs");
+const path = "C:\\bottle-server\\game_v2\\preloader_new.js";
+let c = fs.readFileSync(path, "utf8");
+console.log("LEN BEFORE:", c.length);
+const before = (c.match(/this\.supportsChatTranslation = false;/g) || []).length;
+console.log("Count of false occurrences:", before);
+c = c.split("this.supportsChatTranslation = false;").join("this.supportsChatTranslation = true;");
+fs.writeFileSync(path, c, "utf8");
+console.log("LEN AFTER:", c.length);
+console.log("DONE");

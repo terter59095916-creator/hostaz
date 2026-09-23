@@ -1,0 +1,183 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0">
+<style>
+body {
+  background-color: #0a0806;
+  font-family: Arial, Helvetica, sans-serif;
+  height: 100%;
+  margin: 0;
+  width: 100%;
+  position: fixed;
+  overflow: hidden;
+}
+#game-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#game {
+  position: relative;
+  width: 100%;
+  max-width: 1613px;
+  aspect-ratio: 1613 / 1000;
+  max-height: 100%;
+}
+@media (max-width: 900px) {
+  #game { max-width: 100%; aspect-ratio: auto; height: 100%; }
+}
+</style>
+<script>
+function start() {
+  window["splash"] && splash(
+    {"publicPath":"","js":["splash_new.js?v=1787896431","preloader_new.js?v=1789955280"],"css":["preloader_new.css"]},
+    document.getElementById("game")
+  );
+}
+</script>
+<script src="splash_new.js?v=1787896431"></script>
+<script>
+(function() {
+  function forceYoutubePlay() {
+    var iframes = document.querySelectorAll('iframe[src*="youtube"]');
+    iframes.forEach(function(f) {
+      try {
+        f.contentWindow.postMessage(JSON.stringify({event:'command', func:'unMute', args:[]}), '*');
+        f.contentWindow.postMessage(JSON.stringify({event:'command', func:'playVideo', args:[]}), '*');
+      } catch(e) {}
+    });
+  }
+  document.addEventListener('touchstart', forceYoutubePlay, { capture: true, once: true, passive: true });
+  document.addEventListener('click', forceYoutubePlay, { capture: true, once: true, passive: true });
+})();
+</script>
+</head>
+<body onload="window['start'] && start();">
+<div id="game-wrap"><div id="game"></div></div>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"9f236aa0a99a4d40868be5545654214e","r":1}' crossorigin="anonymous"></script>
+<style>
+#kickout-notify-overlay{display:none;position:fixed;inset:0;z-index:99999;background:rgba(10,5,15,0.88);align-items:center;justify-content:center;padding:20px;font-family:'Inter',Arial,sans-serif;}
+#kickout-notify-overlay.show{display:flex;}
+.kn-card{width:100%;max-width:360px;background:linear-gradient(180deg,#3a2350,#241432);border-radius:24px;padding:28px 24px;text-align:center;box-shadow:0 30px 70px -15px rgba(0,0,0,.7);border:1px solid rgba(255,255,255,0.08);animation:kn-pop .35s cubic-bezier(.34,1.56,.64,1);}
+@keyframes kn-pop{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+.kn-icon{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;background:linear-gradient(155deg,#ff6b81,#ff3355);display:flex;align-items:center;justify-content:center;font-size:32px;animation:kn-shake 1.2s ease-in-out infinite;}
+@keyframes kn-shake{0%,100%{transform:rotate(0);}20%{transform:rotate(-8deg);}40%{transform:rotate(8deg);}60%{transform:rotate(-5deg);}80%{transform:rotate(5deg);}}
+.kn-title{font-family:Georgia,serif;font-size:20px;font-weight:700;color:#fff;margin:0 0 6px;}
+.kn-desc{font-size:14px;color:#c9bcd9;margin:0 0 18px;line-height:1.5;}
+.kn-desc b{color:#ffce85;}
+.kn-timer-wrap{background:rgba(0,0,0,0.3);border-radius:14px;padding:12px;margin-bottom:20px;}
+.kn-timer{font-size:34px;font-weight:800;color:#ff5c7a;font-variant-numeric:tabular-nums;}
+.kn-timer-label{font-size:11px;color:#a596b8;text-transform:uppercase;letter-spacing:1px;margin-top:2px;}
+.kn-btn-primary{width:100%;border:0;border-radius:16px;padding:15px 0;font-size:15px;font-weight:800;color:#1a0f24;cursor:pointer;background:linear-gradient(155deg,#ffce85,#e8b34d);box-shadow:0 12px 28px -10px rgba(232,179,77,0.55);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;}
+.kn-btn-primary:active{transform:scale(0.98);}
+.kn-btn-ghost{width:100%;border:0;background:transparent;color:#a596b8;font-size:13px;font-weight:600;padding:8px 0;cursor:pointer;}
+.kn-crystal{width:18px;height:18px;}
+</style>
+<div id="kickout-notify-overlay">
+  <div class="kn-card">
+    <div class="kn-icon">??</div>
+    <h2 class="kn-title">Masadan qovulursan!</h2>
+    <p class="kn-desc"><b id="kn-kicker-name"></b> s?ni masadan qovmaq ist?yir. Kristal �d?yib qala bil?rs?n!</p>
+    <div class="kn-timer-wrap">
+      <div class="kn-timer" id="kn-timer">30</div>
+      <div class="kn-timer-label">saniy? qal�b</div>
+    </div>
+    <button class="kn-btn-primary" onclick="knPayToStay()">?? 100 �r?k �d?, masada qal</button>
+    <button class="kn-btn-ghost" onclick="knDismiss()">Bilir?m, ��x�ram</button>
+  </div>
+</div>
+<script>
+(function() {
+  let knMyId = null, knActiveStreamId = null, knTimerInterval = null;
+  function knSend(obj) {
+    if (window.knSendGameMessage) window.knSendGameMessage(obj);
+  }
+  function knHandleMessage(msg) {
+    if (msg.type === 'user_kickout') {
+      console.log('KN-DEBUG user_kickout alindi:', JSON.stringify(msg));
+      fetch('/api/profile/me', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('authToken') } })
+        .then(r => r.json()).then(me => {
+          if (String(me.id) === String(msg.kicked_user.id)) {
+            knShowNotify(msg.kicker_user.name, msg.kicked_user.id, msg.game_id);
+          }
+        }).catch(() => {});
+    } else if (msg.type === 'user_save' || msg.type === 'user_kicked') {
+      knHide();
+    }
+  }
+  window.knMyGameId = null;
+  function knShowNotify(kickerName, myUserId, gameId) {
+    knMyId = myUserId; knMyGameId = gameId;
+    document.getElementById('kn-kicker-name').textContent = kickerName;
+    document.getElementById('kickout-notify-overlay').classList.add('show');
+    let t = 30;
+    document.getElementById('kn-timer').textContent = t;
+    if (knTimerInterval) clearInterval(knTimerInterval);
+    knTimerInterval = setInterval(() => {
+      t--;
+      document.getElementById('kn-timer').textContent = Math.max(0, t);
+      if (t <= 0) { clearInterval(knTimerInterval); knHide(); }
+    }, 1000);
+  }
+  function knHide() {
+    document.getElementById('kickout-notify-overlay').classList.remove('show');
+    if (knTimerInterval) clearInterval(knTimerInterval);
+  }
+  window.knPayToStay = function() {
+    knSend({ type: 'user_save', user_id: knMyId, save_referrer: 'self' });
+    knHide();
+  };
+  window.knDismiss = function() { knHide(); };
+  window.knOnGameMessage = function(obj) { knHandleMessage(obj); };
+})();
+</script>
+
+
+<script>
+(function() {
+  function mgToast(msg) {
+const t = document.createElement('div');
+t.textContent = msg;
+t.style.cssText = 'position:fixed; top:20px; left:50%; transform:translateX(-50%); background:linear-gradient(155deg,#F0C05A,#E63950); color:#fff; padding:12px 24px; border-radius:20px; font-weight:700; font-size:14px; z-index:999999; box-shadow:0 4px 20px rgba(0,0,0,.5); font-family:sans-serif; animation:mgFadeInOut 2.5s ease forwards;';
+const style = document.createElement('style');
+style.textContent = '@keyframes mgFadeInOut { 0% {opacity:0; transform:translate(-50%,-10px);} 15% {opacity:1; transform:translate(-50%,0);} 85% {opacity:1;} 100% {opacity:0; transform:translate(-50%,-10px);} }';
+if (!document.getElementById('mg-toast-style')) { style.id = 'mg-toast-style'; document.head.appendChild(style); }
+document.body.appendChild(t);
+setTimeout(() => t.remove(), 2600);
+}
+function mgToken() {
+    return document.cookie.split('; ').find(r => r.startsWith('authToken='))?.split('=')[1] || '';
+  }
+  window.mgBuyCoins = async function(amount) {
+    const token = mgToken();
+    try {
+      const res = await fetch('/api/shop/buy-coins', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify({ amount }) });
+      const data = await res.json();
+      if (res.ok) { try { const snd = new Audio('/mg-sfx/jackpot_coins.mp3'); snd.volume = 0.6; snd.play().catch(()=>{}); } catch(e) {} } else { console.log('Alis-veris xetasi: ' + data.error); }
+    } catch (e) { alert('Xeta: ' + e.message); }
+  };
+  window.mgBuyVip = async function(period) {
+    const token = mgToken();
+    try {
+      const res = await fetch('/api/shop/buy-vip', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify({ period }) });
+      const data = await res.json();
+      if (!res.ok) { console.log('VIP alma xetasi: ' + data.error); }
+    } catch (e) { alert('Xeta: ' + e.message); }
+  };
+  window.mgBuyPass = async function() {
+    const token = mgToken();
+    try {
+      const res = await fetch('/api/shop/buy-premium-pass', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } });
+      const data = await res.json();
+      if (!res.ok) { console.log('Pass alma xetasi: ' + data.error); }
+    } catch (e) { alert('Xeta: ' + e.message); }
+  };
+})();
+</script>
+</body>
+</html>

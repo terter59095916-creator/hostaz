@@ -1,0 +1,3 @@
+[33mcf65d10[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m TAPILDI: her kadr-da (60/saniye) clientWidth/clientHeight oxunmasi meburi layout hesablamasi yaradirdi - tezliyi 150ms-e (6-7/saniye) salindi
+[33me32f702[m Hediyye animasiya limiti berpa edildi (50) + checkScrolls MutationObserver-e kecirildi
+[33m315315b[m YIGILAN DUZELISLER (evvelki push-lar ugursuz olub): checkScrolls 500ms->5000ms, goto_specific_room mahni gonderme, get_live_list limit, mute-root duzelis - HAMISI BU DEFE

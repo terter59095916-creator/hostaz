@@ -1,0 +1,31 @@
+async function saveSettings() {
+const token = localStorage.getItem('authToken');
+const name = document.getElementById('settings-name').value.trim();
+const age = document.getElementById('settings-age').value;
+const status = document.getElementById('settings-status').value;
+const genderInput = document.querySelector('input[name=s-gender]:checked');
+const gender = genderInput ? genderInput.value : null;
+try {
+if (name) {
+await fetch('/api/profile/name', {
+method: 'POST',
+headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+body: JSON.stringify({ display_name: name })
+});
+}
+await fetch('/api/profile/details', {
+method: 'POST',
+headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+body: JSON.stringify({ age: age ? Number(age) : null, gender })
+});
+await fetch('/api/profile/status', {
+method: 'POST',
+headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+body: JSON.stringify({ status })
+});
+closeSettings();
+loadProfile();
+} catch (e) {
+alert('Yadda saxlanmadı, yenidən cəhd edin.');
+}
+}

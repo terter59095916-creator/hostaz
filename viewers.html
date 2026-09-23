@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profilime baxanlar</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; color: #1a1a1a; }
+  .header { background: white; padding: 12px 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .header a { color: #ff7a00; text-decoration: none; font-weight: bold; margin-right: 16px; }
+  .container { max-width: 500px; margin: 0 auto; padding: 16px; }
+  .section { background: white; border-radius: 10px; padding: 16px; }
+  .user-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: inherit; }
+  .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #ff7a00; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; object-fit: cover; }
+  .user-name { flex: 1; font-weight: bold; }
+</style>
+</head>
+<body>
+  <div class="header"><a href="/feed">Lent</a><a href="/game">Oyun</a><a href="/friends">Dostlar</a></div>
+  <div class="container">
+    <div class="section"><h3 style="margin-bottom:10px;">Profilime baxanlar</h3><div id="viewersList"></div></div>
+  </div>
+<script>
+  const token = localStorage.getItem('authToken');
+  if (!token) window.location.href = '/login';
+  async function apiCall(url) {
+    const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
+    return res.json();
+  }
+  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  async function loadViewers() {
+    const viewers = await apiCall('/api/profile-viewers');
+    document.getElementById('viewersList').innerHTML = viewers.length ? viewers.map(u => {
+      const initial = (u.display_name || u.username || '?')[0].toUpperCase();
+      const avatarHtml = u.photo_url ? ('<img class="user-avatar" src="' + u.photo_url + '">') : ('<div class="user-avatar">' + initial + '</div>');
+      return '<a class="user-row" href="/profile?id=' + u.id + '">' + avatarHtml + '<div class="user-name">' + escapeHtml(u.display_name || u.username) + '</div></a>';
+    }).join('') : '<p style="color:#888;">Hele kimse baxmayib</p>';
+  }
+  loadViewers();
+  fetch('/api/profile-viewers/mark-seen', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } });
+</script>
+</body>
+</html>

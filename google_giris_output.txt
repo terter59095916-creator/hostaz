@@ -1,0 +1,1 @@
+"w+);base64,(.+)$/);\r\n    if (!matches) return res.status(400).send('Invalid avatar data');\r\n    const buffer = Buffer.from(matches[2], 'base64');\r\n    res.set('Content-Type', matches[1]);\r\n    res.send(buffer);\r\n});\r\n// Google ile giris\r\napp.post('/a"

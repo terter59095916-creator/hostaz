@@ -1,0 +1,99 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0"><style>body {
+                background-color: #759951;
+                font-family: Arial, Helvetica, sans-serif;
+                height: 100%;
+                margin: 0;
+                width: 100%;
+                position: fixed;
+            }</style><script src="https://browser.sentry-cdn.com/8.30.0/bundle.min.js" integrity="sha384-yp56qpAK8kqwiX5BmY/+1wpyLlPGV4ag8LdEKrteZqr6Yy3xfXrq9ePvbMI4IH1S" crossorigin="anonymous"></script><script>window["Sentry"] && Sentry.onLoad(function () {
+    function isOrphanRejectionFrom(event, urlRe) {
+        var ex = event && event.exception && event.exception.values
+            && event.exception.values[0];
+
+        if (!ex || !ex.mechanism || ex.mechanism.type !== "onunhandledrejection")
+            return false;
+
+        var frames = ex.stacktrace && ex.stacktrace.frames || [];
+        for (var i = 0; i < frames.length; i++) {
+            if (urlRe.test(frames[i].filename || ''))
+                return true;
+        }
+
+        return false;
+    }
+    window["Sentry"] && Sentry.init({
+        dsn: "https://8a67a56be769d125e53a7e88cedd78a8@o4507935550341120.ingest.us.sentry.io/4507935557550080",
+        release: "1.6.530",
+        ignoreErrors: ["[ciliz.preloader] Login error","[ciliz.splash]: Error: Failed to loadCSS","[ciliz.splash]: Error: Failed to loadJS","[ciliz.splash]: unsupported_browser","Can't find variable: ios_callbacks","Cannot read properties of null","chrome-extension://","dhdgffkkebhmkfjojejmpbldmpobfkfo","null is not an object (evaluating 'tex._batchEnabled')","Timed out (15000ms) loading image","Отказано в доступе","ResizeObserver loop limit exceeded","_pixi_utils__WEBPACK_IMPORTED_MODULE_1__.isPow2","FD126C42-EBFA-4E12-B309-BB3FDD723AC1","ws_quick_scripts","Cannot read property 'children' of undefined","Cannot read property 'style' of null","unmuteAudio is not defined","muteAudio is not defined","Cannot read property 'style' of undefined","SecurityError: Permission denied to access property \"dispatchEvent\" on cross-origin object","TypeError: Illegal invocation","TypeError: c.data.split is not a function","a.split is not a function","Can't find variable: yndx_svtn_e","Cannot read property 'getAttribute' of undefined","Cannot call method 'getAttribute' of undefined","canvas is null","this$1.onError is null","https://tganalytics.xyz/","YBFormsDetected","hookAppData is not defined","'hookAppData' is undefined","Can't find variable: hookAppData","Failed to start the audio device"],
+        denyUrls: [
+            /^chrome-extension:\/\//i,
+            /^moz-extension:\/\//i,
+        ],
+        beforeSend: function (event, hint) {
+            if (isOrphanRejectionFrom(event, /games\.s3\.yandex\.net\/sdk/)) {
+                return null;
+            }
+            if (isOrphanRejectionFrom(event, /@vimeo\/player/)) {
+                return null;
+            }
+            var orig = hint
+                    && (hint.originalException || hint.syntheticException);
+            if (orig && event && event.level === "error") {
+                setTimeout(function () {
+                    console.error(orig);
+                }, 0);
+            }
+            if (orig && orig.sentry_fingerprint)
+                event.fingerprint = orig.sentry_fingerprint;
+            return event;
+        }
+    });
+});</script>
+
+<!-- ================= SOCKET.IO & DEFENSIVE SOCKETFACTORY ================= -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+    (function() {
+        function getSocket(url, opts) {
+            var target = url || window.location.origin;
+            return typeof io !== 'undefined' ? io(target, opts) : null;
+        }
+
+        var fn = function(url, opts) {
+            return getSocket(url, opts);
+        };
+        fn.create = getSocket;
+        fn.connect = getSocket;
+        fn.getSocket = getSocket;
+
+        // Overwrite-dan qorumaq üçün Object.defineProperty istifadə olunur:
+        try {
+            Object.defineProperty(window, 'socketFactory', {
+                get: function() { return fn; },
+                set: function(val) { /* dəyişdirilməyə icazə vermirik */ },
+                configurable: true
+            });
+        } catch(e) {
+            window.socketFactory = fn;
+        }
+    })();
+</script>
+<!-- ========================================================================= -->
+
+<script>function start() {
+                window['splash'] && splash(
+                    {"publicPath":"","js":["splash.7e3c34e16b36.js?2278240d191597f3dfd9","preloader.7e3c34e16b36.js?2278240d191597f3dfd9"],"css":["preloader.7e3c34e16b36.css?2278240d191597f3dfd9"]}
+                );
+            };</script><script src="splash.7e3c34e16b36.js?2278240d191597f3dfd9"></script><link rel="manifest" href="yandex-manifest.json"><script>(function (m, e, t, r, i, k, a) {
+                m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+                m[i].l = 1 * new Date();
+                k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+            })
+
+            (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+            ym(66592129, "init", {
+                clickmap: true,
+                trackLinks: true,
+                accurateTrackBounce: true
+            });</script><noscript><div><img src="https://mc.yandex.ru/watch/66592129" style="position:absolute; left:-9999px;" alt=""/></div></noscript></head><body onload="window['start'] && start();"></body></html>

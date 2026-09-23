@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; color: #1a1a1a; }
+  .header { background: white; padding: 12px 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .header a { color: #ff7a00; text-decoration: none; font-weight: bold; margin-right: 16px; }
+  .container { max-width: 700px; margin: 0 auto; padding: 16px; }
+  .profile-card { background: white; border-radius: 10px; padding: 20px; text-align: center; margin-bottom: 12px; }
+  .profile-photo { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto; }
+  .profile-initial { width: 100px; height: 100px; border-radius: 50%; background: #ff7a00; color: white; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: bold; margin: 0 auto; }
+  .profile-name { font-size: 20px; font-weight: bold; margin-top: 10px; }
+  .profile-status { color: #888; margin-top: 4px; }
+  .profile-actions { margin-top: 12px; }
+  .btn { background: #ff7a00; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; }
+  .btn:disabled { background: #ccc; }
+  .post { background: white; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+  .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .post-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+  .post-name { font-weight: bold; }
+  .post-actions { display: flex; gap: 16px; margin-top: 10px; }
+  .post-actions button { background: none; border: none; cursor: pointer; color: #666; }
+</style>
+</head>
+<body>
+  <div class="header"><a href="/feed">Lent</a><a href="/game">Oyun</a><a href="/friends">Dostlar</a><a href="/photos">Fotosekil</a></div>
+  <div class="container">
+    <div class="profile-card" id="profileCard"></div>
+    <div class="post" style="padding:12px;"><h3 style="margin-bottom:10px;">Fotosekiller</h3><div id="photosList" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div></div>
+    <div id="postsList"></div>
+  </div>
+<script>
+  const token = localStorage.getItem('authToken');
+  if (!token) window.location.href = '/login';
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get('id');
+  const autoOpenPhotoId = params.get('photo');
+  async function apiCall(url, method, body) {
+    const res = await fetch(url, { method: method || 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: body ? JSON.stringify(body) : undefined });
+    return res.json();
+  }
+  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  async function loadProfile() {
+    const p = await apiCall('/api/profile/' + userId);
+    const initial = (p.display_name || p.username || '?')[0].toUpperCase();
+    const photoHtml = p.photo_url ? ('<img class="profile-photo" src="' + p.photo_url + '">') : ('<div class="profile-initial">' + initial + '</div>');
+    let actionHtml = '';
+    if (!p.is_me) {
+      if (p.friendship_status === 'accepted') actionHtml = '<a class="btn" style="text-decoration:none;" href="/messages?with=' + p.id + '">Mesaj yaz</a>';
+      else if (p.friendship_status === 'pending') actionHtml = '<button class="btn" disabled>Sorgu gonderilib</button>';
+      else actionHtml = '<button class="btn" onclick="sendReq()">Dost elave et</button>';
+    }
+    document.getElementById('profileCard').innerHTML = photoHtml +
+      '<div class="profile-name">' + escapeHtml(p.display_name || p.username) + '</div>' +
+      (p.status ? '<div class="profile-status">' + escapeHtml(p.status) + '</div>' : '') +
+      '<div class="profile-actions">' + actionHtml + '</div>';
+  }
+  async function sendReq() {
+    await apiCall('/api/friends/request/' + userId, 'POST');
+    loadProfile();
+  }
+  async function loadPosts() {
+    const posts = await apiCall('/api/profile/' + userId + '/posts');
+    document.getElementById('postsList').innerHTML = posts.map(p => {
+      const initial = (p.user.display_name || p.user.username || '?')[0].toUpperCase();
+      const avatarHtml = p.user.photo_url ? ('<img class="post-avatar" src="' + p.user.photo_url + '">') : ('<div class="post-avatar" style="background:#ff7a00;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;">' + initial + '</div>');
+      return '<div class="post"><div class="post-header">' + avatarHtml + '<div class="post-name">' + escapeHtml(p.user.display_name || p.user.username) + '</div></div><div>' + escapeHtml(p.text) + '</div><div class="post-actions"><span>&#10084; ' + p.likes_count + '</span><span>&#128172; ' + p.comments_count + '</span></div></div>';
+    }).join('');
+  }
+  async function loadPhotos() {
+    const photos = await apiCall('/api/photos?user_id=' + userId);
+    document.getElementById('photosList').innerHTML = photos.map(p =>
+      '<img src="' + p.url + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:6px;cursor:pointer;" onclick="openPhoto(' + p.id + ')">'
+    ).join('');
+  }
+  async function openPhoto(photoId) {
+    closeOverlay();
+    const photos = await apiCall('/api/photos?user_id=' + userId);
+    const p = photos.find(x => x.id === photoId);
+    if (!p) return;
+    const overlay = document.createElement('div');
+    overlay.setAttribute('data-photo-overlay', 'true');
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;align-items:center;justify-content:flex-start;flex-direction:column;overflow-y:auto;padding:20px;';
+    overlay.innerHTML = '<div style="background:white;border-radius:10px;max-width:500px;width:100%;overflow:hidden;">' +
+      '<img src="' + p.url + '" style="width:100%;max-height:60vh;object-fit:contain;display:block;">' +
+      '<div style="display:flex;gap:14px;padding:10px 14px;align-items:center;">' +
+        '<button id="likeBtn" style="background:none;border:none;cursor:pointer;font-size:14px;color:' + (p.my_reaction === 'like' ? '#4caf50;font-weight:bold' : '#666') + ';">&#128077; <span id="likeCount">' + p.likes_count + '</span></button>' +
+        '<button id="dislikeBtn" style="background:none;border:none;cursor:pointer;font-size:14px;color:' + (p.my_reaction === 'dislike' ? '#e53935;font-weight:bold' : '#666') + ';">&#128078; <span id="dislikeCount">' + p.dislikes_count + '</span></button>' +
+        '<button style="background:#ff7a00;color:white;border:none;padding:4px 10px;border-radius:6px;margin-left:auto;cursor:pointer;" onclick="closeOverlay()">Bagla</button>' +
+      '</div>' +
+      '<div style="padding:0 14px 14px;" id="photoCommentsList"></div>' +
+      '<div style="display:flex;gap:6px;padding:0 14px 14px;"><input type="text" id="photoCommentInput" style="flex:1;padding:6px 10px;border:1px solid #ddd;border-radius:6px;"><button style="background:#ff7a00;color:white;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;" onclick="sendPhotoComment(' + photoId + ')">Gonder</button></div>' +
+    '</div>';
+    document.body.appendChild(overlay);
+    window.currentOverlay = overlay;
+    document.getElementById('likeBtn').onclick = () => reactPhoto(photoId, 'like');
+    document.getElementById('dislikeBtn').onclick = () => reactPhoto(photoId, 'dislike');
+    loadPhotoComments(photoId);
+  }
+  function closeOverlay() {
+    document.querySelectorAll('[data-photo-overlay]').forEach(el => el.remove());
+    window.currentOverlay = null;
+  }
+  async function reactPhoto(photoId, reaction) {
+    await apiCall('/api/photos/react/' + photoId, 'POST', { reaction });
+    closeOverlay();
+    openPhoto(photoId);
+  }
+  async function loadPhotoComments(photoId) {
+    const comments = await apiCall('/api/photos/comments/' + photoId);
+    document.getElementById('photoCommentsList').innerHTML = comments.map(c =>
+      '<div style="font-size:13px;padding:3px 0;"><b>' + escapeHtml(c.user.display_name || c.user.username) + ':</b> ' + escapeHtml(c.text) + '</div>'
+    ).join('');
+  }
+  async function sendPhotoComment(photoId) {
+    const input = document.getElementById('photoCommentInput');
+    const text = input.value;
+    if (!text.trim()) return;
+    await apiCall('/api/photos/comment/' + photoId, 'POST', { text });
+    input.value = '';
+    loadPhotoComments(photoId);
+  }
+  loadProfile();
+  loadPosts();
+  loadPhotos();
+</script>
+</body>
+</html>

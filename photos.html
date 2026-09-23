@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fotosekiller</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; color: #1a1a1a; }
+  .header { background: white; padding: 12px 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .header a { color: #ff7a00; text-decoration: none; font-weight: bold; margin-right: 16px; }
+  .container { max-width: 700px; margin: 0 auto; padding: 16px; }
+  .upload-box { background: white; border-radius: 10px; padding: 16px; margin-bottom: 12px; text-align: center; }
+  .upload-box input[type=file] { margin-bottom: 10px; }
+  .upload-box button { background: #ff7a00; color: white; border: none; padding: 8px 20px; border-radius: 6px; cursor: pointer; display: block; margin: 0 auto; }
+  .photo-card { background: white; border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+  .photo-card img { width: 100%; display: block; }
+  .photo-actions { display: flex; gap: 14px; padding: 10px 14px; border-top: 1px solid #eee; align-items: center; }
+  .photo-actions button { background: none; border: none; cursor: pointer; color: #666; font-size: 14px; }
+  .photo-actions button.active-like { color: #4caf50; font-weight: bold; }
+  .photo-actions button.active-dislike { color: #e53935; font-weight: bold; }
+  .photo-actions .set-profile-btn { margin-left: auto; background: #ff7a00; color: white; padding: 4px 10px; border-radius: 6px; }
+  .comments { padding: 10px 14px; }
+  .comment { font-size: 13px; padding: 4px 0; }
+  .comment-input { display: flex; gap: 6px; margin-top: 8px; }
+  .comment-input input { flex: 1; border: 1px solid #ddd; border-radius: 6px; padding: 6px 10px; }
+  @media (max-width: 768px) { .container { padding: 8px; } }
+</style>
+</head>
+<body>
+  <div class="header"><a href="/feed">Lent</a><a href="/game">Oyun</a><a href="/friends">Dostlar</a><a href="/photos">Fotosekil</a></div>
+  <div class="container">
+    <div class="upload-box">
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <button onclick="uploadPhotos()">Yukle</button>
+    </div>
+    <div id="photosList"></div>
+  </div>
+<script>
+  const token = localStorage.getItem('authToken');
+  if (!token) window.location.href = '/login';
+  async function apiCall(url, method, body) {
+    const res = await fetch(url, { method: method || 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: body ? JSON.stringify(body) : undefined });
+    return res.json();
+  }
+  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  async function uploadPhotos() {
+    const files = document.getElementById('fileInput').files;
+    for (const file of files) {
+      const dataUrl = await fileToBase64(file);
+      await apiCall('/api/photos/upload', 'POST', { image_data: dataUrl });
+    }
+    document.getElementById('fileInput').value = '';
+    loadPhotos();
+  }
+  async function loadPhotos() {
+    const photos = await apiCall('/api/photos');
+    document.getElementById('photosList').innerHTML = photos.map(p => {
+      return '<div class="photo-card"><img src="' + p.url + '">' +
+        '<div class="photo-actions">' +
+          '<button class="' + (p.my_reaction === 'like' ? 'active-like' : '') + '" onclick="react(' + p.id + ', ' + "'like'" + ')">&#128077; ' + p.likes_count + '</button>' +
+          '<button class="' + (p.my_reaction === 'dislike' ? 'active-dislike' : '') + '" onclick="react(' + p.id + ', ' + "'dislike'" + ')">&#128078; ' + p.dislikes_count + '</button>' +
+          '<button onclick="toggleComments(' + p.id + ')">&#128172; ' + p.comments_count + '</button>' +
+          '<button class="set-profile-btn" onclick="setProfile(' + p.id + ')">Profile qoy</button>' +
+        '</div>' +
+        '<div class="comments" id="comments-' + p.id + '" style="display:none;">' +
+          '<div class="comment-input"><input type="text" id="commentInput-' + p.id + '"><button onclick="submitPhotoComment(' + p.id + ')">Gonder</button></div>' +
+          '<div id="commentsList-' + p.id + '"></div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+  async function react(photoId, reaction) {
+    await apiCall('/api/photos/react/' + photoId, 'POST', { reaction });
+    loadPhotos();
+  }
+  async function setProfile(photoId) {
+    await apiCall('/api/photos/set-profile/' + photoId, 'POST');
+    alert('Profil sekli deyisdirildi!');
+  }
+  async function toggleComments(photoId) {
+    const el = document.getElementById('comments-' + photoId);
+    if (el.style.display === 'none') {
+      el.style.display = 'block';
+      const comments = await apiCall('/api/photos/comments/' + photoId);
+      document.getElementById('commentsList-' + photoId).innerHTML = comments.map(c =>
+        '<div class="comment"><b>' + escapeHtml(c.user.display_name || c.user.username) + ':</b> ' + escapeHtml(c.text) + '</div>'
+      ).join('');
+    } else { el.style.display = 'none'; }
+  }
+  async function submitPhotoComment(photoId) {
+    const input = document.getElementById('commentInput-' + photoId);
+    const text = input.value;
+    if (!text.trim()) return;
+    await apiCall('/api/photos/comment/' + photoId, 'POST', { text });
+    input.value = '';
+    toggleComments(photoId);
+    toggleComments(photoId);
+    loadPhotos();
+  }
+  loadPhotos();
+</script>
+</body>
+</html>

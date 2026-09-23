@@ -1,0 +1,282 @@
+{
+    "assets": {
+        "url": "https://butilochka.cdnvideo.ru/mobile/assets.json?c9c6c5dbd89e12cc",
+        "images_url": "http://bottlegae-1347.ciliz.com/",
+        "images_url_v2": "https://butilochka-small.cdnvideo.ru/ciliz/bottle/mobile-images/${name}.png?w=${width}",
+        "images_url_v3": {
+            "png": "https://butilochka-small.cdnvideo.ru/ciliz/bottle/mobile-images/${name}.png?w=${width}",
+            "webp": "https://butilochka-small.cdnvideo.ru/ciliz/bottle/mobile-images/${name}.webp?w=${width}"
+        },
+        "images_url_v4": {
+            "png": "http://bottlegae-1347.ciliz.com/${width}x${height}/${name}.png"
+        },
+        "media_url": "https://butilochka.cdnvideo.ru/bottle/bundle/media/",
+        "media_url_v2": "https://butilochka.cdnvideo.ru/bottle/bundle/media/${name}?2f8c325bee2d92dd",
+        "sfx_url": "https://butilochka.cdnvideo.ru/bottle/bundle/sfx/",
+        "sfx_url_v2": "https://butilochka.cdnvideo.ru/bottle/bundle/sfx/${name}?5d9a29786e435e70",
+        "bundles": [
+            {
+                "size": 300,
+                "url": "https://butilochka.cdnvideo.ru/bottle/bundle/80/${name}?5468b141c95ae6f0"
+            },
+            {
+                "size": 450,
+                "url": "https://butilochka.cdnvideo.ru/bottle/bundle/120/${name}?5468b141c95ae6f0"
+            },
+            {
+                "size": 562,
+                "url": "https://butilochka.cdnvideo.ru/bottle/bundle/150/${name}?5468b141c95ae6f0"
+            },
+            {
+                "size": 675,
+                "url": "https://butilochka.cdnvideo.ru/bottle/bundle/180/${name}?5468b141c95ae6f0"
+            },
+            {
+                "size": 750,
+                "url": "https://butilochka.cdnvideo.ru/bottle/bundle/200/${name}?5468b141c95ae6f0"
+            },
+            {
+                "size": 1125,
+                "url": "https://butilochka.cdnvideo.ru/bottle/bundle/300/${name}?5468b141c95ae6f0"
+            },
+            {
+                "size": 1500,
+                "url": "https://butilochka.cdnvideo.ru/bottle/bundle/400/${name}?5468b141c95ae6f0"
+            },
+            {
+                "size": 1875,
+                "url": "https://butilochka.cdnvideo.ru/bottle/bundle/500/${name}?5468b141c95ae6f0"
+            }
+        ],
+        "bundles_v2": {
+            "dlg": [
+                {
+                    "dpr": 1,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/dlg100/${name}?5468b141c95ae6f0"
+                },
+                {
+                    "dpr": 2,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/dlg200/${name}?5468b141c95ae6f0"
+                },
+                {
+                    "dpr": 3,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/dlg300/${name}?5468b141c95ae6f0"
+                }
+            ],
+            "table": [
+                {
+                    "size": 300,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/80/${name}?5468b141c95ae6f0"
+                },
+                {
+                    "size": 450,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/120/${name}?5468b141c95ae6f0"
+                },
+                {
+                    "size": 562,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/150/${name}?5468b141c95ae6f0"
+                },
+                {
+                    "size": 675,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/180/${name}?5468b141c95ae6f0"
+                },
+                {
+                    "size": 750,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/200/${name}?5468b141c95ae6f0"
+                },
+                {
+                    "size": 1125,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/300/${name}?5468b141c95ae6f0"
+                },
+                {
+                    "size": 1500,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/400/${name}?5468b141c95ae6f0"
+                },
+                {
+                    "size": 1875,
+                    "url": "https://butilochka.cdnvideo.ru/bottle/bundle/500/${name}?5468b141c95ae6f0"
+                }
+            ]
+        }
+    },
+    "ios": {
+        "store_version": "1.4.3",
+        "bootstrap": "https://butilochka.cdnvideo.ru/bottle/html/bottle_mobile.html",
+        "bootstrap_v2": "https://butilochka.cdnvideo.ru/bottle/html/ios_bottle_mobile.html",
+        "cf_proxy": {
+            "host": "http-proxy.ciliz.com",
+            "port": 49157
+        }
+    },
+    "android": {
+        "store_version": "1.4.3",
+        "bootstrap": "https://butilochka.cdnvideo.ru/bottle/html/android_bottle_mobile.html",
+        "releases": {
+            "appgallery": {
+                "blocked": [
+                    "1.0.0"
+                ],
+                "recommended": "1.0.0",
+                "required": "3.7.6",
+                "url": "https://appgallery.huawei.com/app/C103005977"
+            },
+            "googleplay": {
+                "blocked": [
+                    "1.0.0"
+                ],
+                "recommended": "1.0.0",
+                "required": "3.7.6",
+                "url": "https://play.google.com/store/apps/details?id=com.ciliz.spinthebottle"
+            },
+            "mts": {
+                "blocked": [
+                    "1.0.0"
+                ],
+                "recommended": "1.0.0",
+                "required": "1.0.0",
+                "url": "https://links.appbazar.am/a2khVCE8ERkRA3t27"
+            },
+            "rustore": {
+                "blocked": [
+                    "1.0.0"
+                ],
+                "recommended": "1.0.0",
+                "required": "3.7.6",
+                "url": "https://www.rustore.ru/catalog/app/com.ciliz.spinthebottle"
+            }
+        },
+        "cf_proxy": {
+            "host": "http-proxy.ciliz.com",
+            "port": 49157
+        }
+    },
+    "ma": {
+        "server": "37.200.70.31",
+        "server_v2": [
+            "wss://bottle-mamba.ciliz.com/ws/"
+        ],
+        "port": 2223,
+        "music": "http://95.213.248.70/api/",
+        "music_v2": [
+            "http://95.213.248.70/api/"
+        ],
+        "youtube": "http://78.155.203.218/",
+        "youtube_v2": [
+            "https://youtube.ciliz.com/",
+            "https://api-proxy.ciliz.com/youtube/"
+        ]
+    },
+    "ok": {
+        "server": "85.119.149.107",
+        "server_v2": [
+            "wss://bottle-ok.ciliz.com/ws/"
+        ],
+        "port": 2222,
+        "music": "http://95.213.248.70/api/",
+        "music_v2": [
+            "http://95.213.248.70/api/"
+        ],
+        "youtube": "http://78.155.203.218/",
+        "youtube_v2": [
+            "https://youtube.ciliz.com/",
+            "https://api-proxy.ciliz.com/youtube/"
+        ]
+    },
+    "as": {
+        "server": "54.72.14.154",
+        "server_v2": [
+            "wss://api-proxy.ciliz.com/fb/"
+        ],
+        "port": 2223,
+        "youtube": "http://78.155.203.218/",
+        "youtube_v2": [
+            "https://youtube.ciliz.com/",
+            "https://api-proxy.ciliz.com/youtube/"
+        ]
+    },
+    "fb": {
+        "server": "54.72.14.154",
+        "server_v2": [
+            "wss://bottle-fb-2.ciliz.com/ws/"
+        ],
+        "port": 2223,
+        "youtube": "http://78.155.203.218/",
+        "youtube_v2": [
+            "https://youtube.ciliz.com/",
+            "https://api-proxy.ciliz.com/youtube/"
+        ]
+    },
+    "gg": {
+        "server": "54.72.14.154",
+        "server_v2": [
+            "wss://api-proxy.ciliz.com/fb/"
+        ],
+        "port": 2223,
+        "youtube": "http://78.155.203.218/",
+        "youtube_v2": [
+            "https://youtube.ciliz.com/",
+            "https://api-proxy.ciliz.com/youtube/"
+        ]
+    },
+    "fbig": {
+        "server": "bottle-ig.ciliz.com",
+        "server_v2": [
+            "wss://bottle-ig.ciliz.com/ws/"
+        ],
+        "port": 4445
+    },
+    "fb-ig": {
+        "server": "bottle-ig.ciliz.com",
+        "server_v2": [
+            "wss://bottle-ig.ciliz.com/ws/"
+        ],
+        "port": 4445
+    },
+    "vk": {
+        "server": "185.137.235.33",
+        "server_v2": [
+            "wss://bottle-vk.ciliz.com/ws/"
+        ],
+        "port": 2223,
+        "music": "http://95.213.248.70/api/",
+        "music_v2": [
+            "http://95.213.248.70/api/"
+        ],
+        "youtube": "http://78.155.203.218/",
+        "youtube_v2": [
+            "https://youtube.ciliz.com/",
+            "https://api-proxy.ciliz.com/youtube/"
+        ]
+    },
+    "mm": {
+        "server": "178.132.207.59",
+        "server_v2": [
+            "wss://bottle-mm.ciliz.com/ws/"
+        ],
+        "port": 2222,
+        "youtube": "http://78.155.203.218/",
+        "youtube_v2": [
+            "https://youtube.ciliz.com/",
+            "https://api-proxy.ciliz.com/youtube/"
+        ]
+    },
+    "tg": {
+        "server": "bottle-tg.ciliz.com",
+        "server_v2": [
+            "wss://bottle-tg.ciliz.com/ws/"
+        ],
+        "port": 2223,
+        "youtube": "http://78.155.203.218/",
+        "youtube_v2": [
+            "https://youtube.ciliz.com/",
+            "https://api-proxy.ciliz.com/youtube/"
+        ]
+    },
+    "ya": {
+        "server": "bottle-ya.ciliz.com",
+        "server_v2": [
+            "wss://bottle-ya.ciliz.com/ws/"
+        ],
+        "port": 2223
+    }
+}

@@ -1,0 +1,54 @@
+} else if (msg.type === 'user_kickout') {
+    if (!wsUser || !Boolean(wsUser.is_vip) || !ws.gameRoom) return;
+    const targetIdKO = Number(msg.user_id);
+    let targetWsKO = null;
+    let targetPlayerKO = null;
+    ws.gameRoom.players.forEach((p, cws) => { if (Number(p.id) === targetIdKO) { targetWsKO = cws; targetPlayerKO = p; } });
+    if (!targetWsKO || !targetPlayerKO) return;
+    if (!ws.gameRoom.pendingKickouts) ws.gameRoom.pendingKickouts = new Map();
+    if (ws.gameRoom.pendingKickouts.has(targetIdKO)) return;
+    const deadlineTsKO = Date.now() + 30000;
+    const timeoutHandleKO = setTimeout(() => {
+      const room = ws.gameRoom;
+      if (!room || !room.pendingKickouts || !room.pendingKickouts.has(targetIdKO)) return;
+      room.pendingKickouts.delete(targetIdKO);
+      const rejoinUntilMs = Date.now() + 15 * 60 * 1000;
+      db.prepare('UPDATE users SET kicked_until = ? WHERE id = ?').run(new Date(rejoinUntilMs).toISOString(), targetIdKO);
+      broadcastToRoom(room, null, {
+        type: 'user_kicked',
+        kicker_user: { id: String(wsUser.id), name: wsUser.display_name || wsUser.username, male: wsUser.gender !== 'female' },
+        kicked_user: { id: String(targetIdKO), name: targetPlayerKO.name, male: targetPlayerKO.male },
+        unkick_ts: rejoinUntilMs,
+        game_id: room.gameId
+      });
+      if (targetWsKO.gameRoom) removePlayerFromRoom(targetWsKO.gameRoom, targetWsKO);
+      console.log('WS: kickout - istifadeci kenarlasdirildi - target=' + targetIdKO);
+    }, 30000);
+    ws.gameRoom.pendingKickouts.set(targetIdKO, { initiatorId: wsUser.id, timeoutHandle: timeoutHandleKO, deadlineTs: deadlineTsKO });
+    broadcastToRoom(ws.gameRoom, null, {
+      type: 'user_kickout',
+      kicker_user: { id: String(wsUser.id), name: wsUser.display_name || wsUser.username, male: wsUser.gender !== 'female' },
+      kicked_user: { id: String(targetIdKO), name: targetPlayerKO.name, male: targetPlayerKO.male },
+      kickout_ts: deadlineTsKO,
+      kickout_info: { price: 0 }
+    });
+    console.log('WS: kickout baslandi - initiator=' + wsUser.username + ' target=' + targetIdKO);
+} else if (msg.type === 'user_save') {
+    if (!wsUser || !ws.gameRoom || !ws.gameRoom.pendingKickouts) return;
+    const targetIdSave = Number(msg.user_id);
+    const pending = ws.gameRoom.pendingKickouts.get(targetIdSave);
+    if (!pending) return;
+    clearTimeout(pending.timeoutHandle);
+    ws.gameRoom.pendingKickouts.delete(targetIdSave);
+    let savedPlayer = null;
+    ws.gameRoom.players.forEach((p) => { if (Number(p.id) === targetIdSave) savedPlayer = p; });
+    broadcastToRoom(ws.gameRoom, null, {
+      type: 'user_save',
+      saviour_user: { id: String(wsUser.id), name: wsUser.display_name || wsUser.username, male: wsUser.gender !== 'female' },
+      saved_user: { id: String(targetIdSave), name: savedPlayer ? savedPlayer.name : '', male: savedPlayer ? savedPlayer.male : true },
+      kickout_info: { price: 0 }
+    });
+    console.log('WS: kickout xilas edildi - saver=' + wsUser.username + ' target=' + targetIdSave);
+} else if (msg.type === 'kickout_refresh') {
+    if (!ws) return;
+    ws.send(encodeMessage({ type: 'kickout_refresh', kickout_info: { price: 0 }, packet: ws.packetCounter=(ws.packetCounter||1000)+1 }));

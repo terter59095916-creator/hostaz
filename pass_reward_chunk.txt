@@ -1,0 +1,1 @@
+"{} }\r\n              ownedItemsPass[rewardBoosterName] = true;\r\n              db.prepare('UPDATE users SET owned_items = ? WHERE id = ?').run"

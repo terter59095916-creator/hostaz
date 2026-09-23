@@ -1,0 +1,1 @@
+"rationSec * 1000);\n} else if (msg.type === 'user_kickout') {\n    if (!wsUser || !Boolean(wsUser.is_vip) || !ws.gameRoom) return;\n    const targetIdKO = Number(msg.user_id);\n    let targetWsKO = null;\n    let targetPlayerKO = null;\n    ws.gameRoom.pla"

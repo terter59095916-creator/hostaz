@@ -1,0 +1,140 @@
+} else if (msg.type === 'start_live') {
+    if (!wsUser) { ws.send(encodeMessage({ type: 'live_error', reason: 'not_logged_in', packet: ws.packetCounter=(ws.packetCounter||1000)+1 })); return; }
+    const streamId = nextStreamId++;
+    const hostSeat = { ws, userId: wsUser.id, name: wsUser.display_name || wsUser.username, photo: wsUser.avatar_data ? ('/api/avatar/' + wsUser.id) : '', hasCamera: Boolean(msg.has_camera), photoData: msg.photo_data || null };
+    const stream = {
+      id: streamId,
+      hostId: wsUser.id,
+      seats: new Map([[wsUser.id, hostSeat]]),
+      viewers: new Map(),
+      likes: 0,
+      chatHistory: [],
+      startedAt: Date.now()
+    };
+    liveStreamsMap.set(streamId, stream);
+    ws.liveStreamId = streamId;
+    ws.send(encodeMessage({ type: 'live_started', stream_id: streamId, packet: ws.packetCounter=(ws.packetCounter||1000)+1 }));
+    console.log('WS: canli yayim baslandi - ' + hostSeat.name + ' id=' + streamId);
+} else if (msg.type === 'stop_live') {
+    const streamId = ws.liveStreamId;
+    const stream = streamId ? liveStreamsMap.get(streamId) : null;
+    if (stream && wsUser && stream.hostId === wsUser.id) {
+      const endMsg = { type: 'live_ended', stream_id: streamId };
+      stream.seats.forEach(seat => { if (seat.userId !== wsUser.id) try { seat.ws.send(encodeMessage(Object.assign({}, endMsg, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+      stream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, endMsg, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+      liveStreamsMap.delete(streamId);
+      console.log('WS: canli yayim bitdi - id=' + streamId);
+    }
+    ws.liveStreamId = null;
+} else if (msg.type === 'get_live_list') {
+    const list = [];
+    liveStreamsMap.forEach((s) => {
+      const host = s.seats.get(s.hostId);
+      list.push({ id: s.id, name: host ? host.name : '', photo: host ? host.photo : '', has_camera: host ? host.hasCamera : false, viewer_count: s.viewers.size, seat_count: s.seats.size, likes: s.likes });
+    });
+    ws.send(encodeMessage({ type: 'live_list', streams: list, packet: ws.packetCounter=(ws.packetCounter||1000)+1 }));
+} else if (msg.type === 'join_live') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream) { ws.send(encodeMessage({ type: 'live_error', reason: 'not_found', packet: ws.packetCounter=(ws.packetCounter||1000)+1 })); return; }
+    const viewerId = wsUser ? wsUser.id : ('guest_' + Math.random().toString(36).slice(2));
+    stream.viewers.set(ws, viewerId);
+    ws.watchingStreamId = stream.id;
+    ws.viewerIdInStream = viewerId;
+    const seatsInfo = [];
+    stream.seats.forEach(seat => seatsInfo.push({ user_id: String(seat.userId), name: seat.name, photo: seat.photo, has_camera: seat.hasCamera, photo_data: seat.photoData }));
+    ws.send(encodeMessage({
+      type: 'live_joined', stream_id: stream.id, seats: seatsInfo, my_viewer_id: String(viewerId), likes: stream.likes, viewer_count: stream.viewers.size,
+      chat_history: stream.chatHistory.slice(-30), packet: ws.packetCounter=(ws.packetCounter||1000)+1
+    }));
+    stream.seats.forEach(seat => {
+      try { seat.ws.send(encodeMessage({ type: 'live_new_viewer', viewer_id: String(viewerId), viewer_count: stream.viewers.size, packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 })); } catch(e) {}
+    });
+    console.log('WS: canli yayima qosuldu - stream=' + stream.id + ' baxan sayi=' + stream.viewers.size);
+} else if (msg.type === 'leave_live') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (stream && stream.viewers.has(ws)) {
+      const viewerId = stream.viewers.get(ws);
+      stream.viewers.delete(ws);
+      stream.seats.forEach(seat => {
+        try { seat.ws.send(encodeMessage({ type: 'live_viewer_left', viewer_id: String(viewerId), viewer_count: stream.viewers.size, packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 })); } catch(e) {}
+      });
+    }
+    ws.watchingStreamId = null;
+} else if (msg.type === 'invite_to_live') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser || stream.hostId !== wsUser.id) return;
+    if (stream.seats.size >= 10) { ws.send(encodeMessage({ type: 'live_error', reason: 'seats_full', packet: ws.packetCounter=(ws.packetCounter||1000)+1 })); return; }
+    const targetWs = userIdToWs.get(Number(msg.target_user_id));
+    if (!targetWs) { ws.send(encodeMessage({ type: 'live_error', reason: 'user_offline', packet: ws.packetCounter=(ws.packetCounter||1000)+1 })); return; }
+    const hostSeat = stream.seats.get(stream.hostId);
+    targetWs.send(encodeMessage({ type: 'live_invite', stream_id: stream.id, host_name: hostSeat.name, host_photo: hostSeat.photo, packet: targetWs.packetCounter=(targetWs.packetCounter||1000)+1 }));
+    console.log('WS: canli yayima devet gonderildi - stream=' + stream.id + ' target=' + msg.target_user_id);
+} else if (msg.type === 'respond_to_invite') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser) return;
+    if (!msg.accept) {
+      const hostSeat0 = stream.seats.get(stream.hostId);
+      if (hostSeat0) try { hostSeat0.ws.send(encodeMessage({ type: 'live_invite_declined', user_name: wsUser.display_name || wsUser.username, packet: hostSeat0.ws.packetCounter=(hostSeat0.ws.packetCounter||1000)+1 })); } catch(e) {}
+      return;
+    }
+    if (stream.seats.size >= 10) { ws.send(encodeMessage({ type: 'live_error', reason: 'seats_full', packet: ws.packetCounter=(ws.packetCounter||1000)+1 })); return; }
+    const newSeat = { ws, userId: wsUser.id, name: wsUser.display_name || wsUser.username, photo: wsUser.avatar_data ? ('/api/avatar/' + wsUser.id) : '', hasCamera: Boolean(msg.has_camera), photoData: msg.photo_data || null };
+    stream.seats.set(wsUser.id, newSeat);
+    ws.liveStreamId = stream.id;
+    const existingSeats = [];
+    stream.seats.forEach(s => { if (s.userId !== wsUser.id) existingSeats.push({ user_id: String(s.userId), name: s.name, photo: s.photo, has_camera: s.hasCamera, photo_data: s.photoData }); });
+    ws.send(encodeMessage({ type: 'live_seat_joined_self', stream_id: stream.id, existing_seats: existingSeats, packet: ws.packetCounter=(ws.packetCounter||1000)+1 }));
+    stream.seats.forEach(seat => {
+      if (seat.userId === wsUser.id) return;
+      try { seat.ws.send(encodeMessage({ type: 'live_new_seat', user_id: String(wsUser.id), name: newSeat.name, photo: newSeat.photo, has_camera: newSeat.hasCamera, photo_data: newSeat.photoData, packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 })); } catch(e) {}
+    });
+    stream.viewers.forEach((uid, vws) => {
+      try { vws.send(encodeMessage({ type: 'live_new_seat', user_id: String(wsUser.id), name: newSeat.name, photo: newSeat.photo, has_camera: newSeat.hasCamera, photo_data: newSeat.photoData, packet: vws.packetCounter=(vws.packetCounter||1000)+1 })); } catch(e) {}
+    });
+    console.log('WS: yeni qonaq canli yayima qosuldu - stream=' + stream.id + ' user=' + wsUser.username);
+} else if (msg.type === 'leave_seat') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser || !stream.seats.has(wsUser.id)) return;
+    if (wsUser.id === stream.hostId) return;
+    stream.seats.delete(wsUser.id);
+    ws.liveStreamId = null;
+    stream.seats.forEach(seat => {
+      try { seat.ws.send(encodeMessage({ type: 'live_seat_left', user_id: String(wsUser.id), packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 })); } catch(e) {}
+    });
+    stream.viewers.forEach((uid, vws) => {
+      try { vws.send(encodeMessage({ type: 'live_seat_left', user_id: String(wsUser.id), packet: vws.packetCounter=(vws.packetCounter||1000)+1 })); } catch(e) {}
+    });
+} else if (msg.type === 'webrtc_offer' || msg.type === 'webrtc_answer' || msg.type === 'webrtc_ice') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream) return;
+    let targetWs = null;
+    const targetIdStr = String(msg.target_id);
+    stream.seats.forEach(seat => { if (String(seat.userId) === targetIdStr) targetWs = seat.ws; });
+    if (!targetWs) {
+      stream.viewers.forEach((uid, vws) => { if (String(uid) === targetIdStr) targetWs = vws; });
+    }
+    if (!targetWs) return;
+    const fromId = wsUser ? String(wsUser.id) : (ws.viewerIdInStream ? String(ws.viewerIdInStream) : 'guest');
+    if (msg.type === 'webrtc_offer') {
+      targetWs.send(encodeMessage({ type: 'webrtc_offer', sdp: msg.sdp, from_id: fromId, packet: targetWs.packetCounter=(targetWs.packetCounter||1000)+1 }));
+    } else if (msg.type === 'webrtc_answer') {
+      targetWs.send(encodeMessage({ type: 'webrtc_answer', sdp: msg.sdp, from_id: fromId, packet: targetWs.packetCounter=(targetWs.packetCounter||1000)+1 }));
+    } else if (msg.type === 'webrtc_ice') {
+      targetWs.send(encodeMessage({ type: 'webrtc_ice', candidate: msg.candidate, from_id: fromId, packet: targetWs.packetCounter=(targetWs.packetCounter||1000)+1 }));
+    }
+} else if (msg.type === 'live_chat') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !msg.text || !msg.text.trim()) return;
+    const chatMsg = { name: wsUser ? (wsUser.display_name || wsUser.username) : 'Qonaq', text: msg.text.trim().slice(0, 200), ts: Date.now() };
+    stream.chatHistory.push(chatMsg);
+    if (stream.chatHistory.length > 50) stream.chatHistory.shift();
+    const payload = { type: 'live_chat', name: chatMsg.name, text: chatMsg.text };
+    stream.seats.forEach(seat => { try { seat.ws.send(encodeMessage(Object.assign({}, payload, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+    stream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, payload, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+} else if (msg.type === 'live_like') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream) return;
+    stream.likes++;
+    const payload = { type: 'live_likes', likes: stream.likes };
+    stream.seats.forEach(seat => { try { seat.ws.send(encodeMessage(Object.assign({}, payload, { packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+    stream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, payload, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });

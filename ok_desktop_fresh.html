@@ -1,0 +1,139 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0"><style>body {
+                background-color: #fff9f1;
+                font-family: Arial, Helvetica, sans-serif;
+                height: 100%;
+                margin: 0;
+                width: 100%;
+                position: fixed;
+            }
+
+            .preloader-error-dlg {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+                color: black;
+                left: 50%;
+                padding: 10px;
+                position: absolute;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            #game {
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+
+            .game-ok {
+                width: 1000px;
+                height: 620px;
+                margin-top: 25px;
+            }
+
+            .iframe-background {
+                background-image: url("//cdn-s.ciliz.com/html/iframe_background.png?1");
+                background-position: center;
+                background-repeat: no-repeat;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                width: 100%;
+                height: 100%;
+            }
+
+            .iframe-footer {
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                width: 1000px;
+                margin-top: 25px;
+            }
+
+            .icons {
+                display: flex;
+            }
+
+            .icon-margin {
+                margin-left: 5px;
+            }
+
+            .ok-icon-margin {
+                margin-left: 12px;
+            }</style><script src="https://browser.sentry-cdn.com/8.30.0/bundle.min.js" integrity="sha384-yp56qpAK8kqwiX5BmY/+1wpyLlPGV4ag8LdEKrteZqr6Yy3xfXrq9ePvbMI4IH1S" crossorigin="anonymous"></script><script>window["Sentry"] && Sentry.onLoad(function () {
+    // Drops unhandled promise rejections that originate inside a third-party
+    // SDK bundle (matched by a stack-frame filename regex), never by message
+    // text. Structural match => real app errors are never hidden.
+    function isOrphanRejectionFrom(event, urlRe) {
+        var ex = event && event.exception && event.exception.values
+            && event.exception.values[0];
+
+        if (!ex || !ex.mechanism || ex.mechanism.type !== "onunhandledrejection")
+            return false;
+
+        var frames = ex.stacktrace && ex.stacktrace.frames || [];
+        for (var i = 0; i < frames.length; i++) {
+            if (urlRe.test(frames[i].filename || ''))
+                return true;
+        }
+
+        return false;
+    }
+    window["Sentry"] && Sentry.init({
+        dsn: "https://8a67a56be769d125e53a7e88cedd78a8@o4507935550341120.ingest.us.sentry.io/4507935557550080",
+        release: "1.6.534",
+        ignoreErrors: ["[ciliz.preloader] Login error","[ciliz.splash]: Error: Failed to loadCSS","[ciliz.splash]: Error: Failed to loadJS","[ciliz.splash]: unsupported_browser","Can't find variable: ios_callbacks","Cannot read properties of null","chrome-extension://","dhdgffkkebhmkfjojejmpbldmpobfkfo","null is not an object (evaluating 'tex._batchEnabled')","Timed out (15000ms) loading image","Отказано в доступе","ResizeObserver loop limit exceeded","_pixi_utils__WEBPACK_IMPORTED_MODULE_1__.isPow2","FD126C42-EBFA-4E12-B309-BB3FDD723AC1","ws_quick_scripts","Cannot read property 'children' of undefined","Cannot read property 'style' of null","unmuteAudio is not defined","muteAudio is not defined","Cannot read property 'style' of undefined","SecurityError: Permission denied to access property \"dispatchEvent\" on cross-origin object","TypeError: Illegal invocation","TypeError: c.data.split is not a function","a.split is not a function","Can't find variable: yndx_svtn_e","Cannot read property 'getAttribute' of undefined","Cannot call method 'getAttribute' of undefined","canvas is null","this$1.onError is null","https://tganalytics.xyz/","YBFormsDetected","hookAppData is not defined","'hookAppData' is undefined","Can't find variable: hookAppData","Failed to start the audio device"],
+        denyUrls: [
+            /^chrome-extension:\/\//i,
+            /^moz-extension:\/\//i,
+        ],
+        beforeSend: function (event, hint) {
+            // YA SDK FullscreenManager.request()/exit() do 't.finally(cb), t',
+            // discarding the .finally-derived promise. On rejection that orphan
+            // has no catch and fires unhandledrejection AFTER YASocial's own
+            // try/catch already handled the returned promise.
+            if (isOrphanRejectionFrom(event, /games\.s3\.yandex\.net\/sdk/)) {
+                return null;
+            }
+
+            // @vimeo/player rejects its internal ready promise when a video's
+            // owner disabled embedding on this domain (oembed domain_status_code
+            // 403 -> "not embeddable") or the id is gone ("not found"). Normal
+            // content states, not app bugs.
+            if (isOrphanRejectionFrom(event, /@vimeo\/player/)) {
+                return null;
+            }
+
+            var orig = hint
+                    && (hint.originalException || hint.syntheticException);
+            if (orig && event && event.level === "error") {
+                setTimeout(function () {
+                    console.error(orig);
+                }, 0);
+            }
+            if (orig && orig.sentry_fingerprint)
+                event.fingerprint = orig.sentry_fingerprint;
+            return event;
+        }
+    });
+});</script><script>function start() {
+                window['splash'] && splash(
+                    {"publicPath":"","js":["splash.03db6fd04b15.js?b1f7ca339b3050469c1d","preloader.03db6fd04b15.js?b1f7ca339b3050469c1d"],"css":["preloader.03db6fd04b15.css?b1f7ca339b3050469c1d"]},
+                    document.getElementById('game'),
+                    'ok'
+                );
+            }</script><script src="splash.03db6fd04b15.js?b1f7ca339b3050469c1d"></script></head><body onload="window['start'] && start();"><div class="iframe-background" id="bg"><div class="game-ok"><div id="game"></div></div><div class="iframe-footer"><div class="icons"><a href="https://ok.ru/kissgame/topic/65827928195255" target="_blank"><img src="//butilochka.cdnvideo.ru/bottle/faq_files/faq_ok.png" width="86" height="30" border="0"></a><div class="ok-icon-margin" id="ok_shareWidget"></div></div></div></div><script>!function (d, id, did, st) {
+                var js = d.createElement("script");
+                js.src = "https://connect.ok.ru/connect.js";
+                js.onload = js.onreadystatechange = function () {
+                    if (!this.readyState || this.readyState == "loaded" || this.readyState == "complete") {
+                        if (!this.executed) {
+                            this.executed = true;
+                            setTimeout(function () {
+                                OK.CONNECT.insertShareWidget(id, did, st);
+                            }, 0);
+                        }
+                    }
+                };
+                d.documentElement.appendChild(js);
+            }(document, "ok_shareWidget", "https://butilochka.cdnvideo.ru/bottle/html/ok_share_btn.html", "{width:165,height:35,st:'oval',sz:30,ck:1}");</script></body></html>

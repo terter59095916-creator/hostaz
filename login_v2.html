@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="az">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Kiss.az — Giriş</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/az_AZ/sdk.js"></script>
+<style>
+:root{
+--bg-0:#1A0810;
+--bg-1:#240D16;
+--card:#33121F;
+--card-hi:#3D1626;
+--line:rgba(240,192,90,0.12);
+--coral:#E63950;
+--coral-dim:#B82A3E;
+--gold:#F0C05A;
+--ink:#FBEEE0;
+--muted:#C9A0A8;
+--muted-dim:#8A5F68;
+--glow: 0 0 0 1px var(--line), 0 20px 60px -20px rgba(0,0,0,0.7);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+background:
+radial-gradient(1100px 700px at 50% -10%, #3a2350 0%, transparent 60%),
+radial-gradient(800px 500px at 90% 100%, #401f36 0%, transparent 55%),
+var(--bg-0);
+color:var(--ink);
+font-family:'Inter',sans-serif;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:28px 18px;
+position:relative;
+overflow-x:hidden;
+}
+/* ambient floating hearts — restrained */
+.ambient{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0;}
+.ambient span{
+position:absolute; bottom:-40px; opacity:0;
+font-size:14px; color:var(--coral);
+animation:drift linear infinite;
+}
+@keyframes drift{
+0%{transform:translateY(0) translateX(0) rotate(0deg) scale(.8); opacity:0;}
+8%{opacity:.35;}
+92%{opacity:.18;}
+100%{transform:translateY(-115vh) translateX(var(--dx,20px)) rotate(30deg) scale(1); opacity:0;}
+}
+.wrap{position:relative; z-index:1; width:100%; max-width:400px;}
+.brand{
+display:flex; flex-direction:column; align-items:center; gap:14px;
+margin-bottom:30px; text-align:center;
+}
+.brand-mark{
+width:64px; height:64px; border-radius:20px;
+background:linear-gradient(155deg,#3a2450,#241432);
+display:flex; align-items:center; justify-content:center;
+box-shadow: var(--glow), inset 0 1px 0 rgba(255,255,255,0.06);
+position:relative;
+}
+.brand-mark::after{
+content:"";position:absolute; inset:-1px; border-radius:21px;
+padding:1px;
+background:linear-gradient(155deg, rgba(232,179,77,.55), rgba(255,92,122,0) 55%);
+-webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+-webkit-mask-composite: xor; mask-composite: exclude;
+}
+.brand-mark svg{width:32px;height:32px;}
+.brand h1{
+font-family:'Fraunces',serif; font-weight:600; font-style:italic;
+font-size:28px; letter-spacing:.2px; margin:0; color:var(--ink);
+}
+.brand p{margin:0; font-size:13.5px; color:var(--muted); letter-spacing:.3px;}
+.card{
+background:linear-gradient(180deg, var(--card-hi), var(--card));
+border-radius:24px;
+padding:30px 26px 26px;
+box-shadow: var(--glow);
+position:relative;
+}
+.tabs{
+display:flex; background:rgba(0,0,0,0.22); border-radius:14px; padding:4px; margin-bottom:24px;
+}
+.tabs button{
+flex:1; border:0; background:transparent; padding:10px 0;
+font-family:'Inter'; font-size:14px; font-weight:600; color:var(--muted-dim);
+border-radius:11px; cursor:pointer; transition:.2s ease;
+}
+.tabs button.active{
+background:linear-gradient(155deg,#3d2755,#2c1a3f);
+color:var(--ink);
+box-shadow: inset 0 0 0 1px rgba(255,255,255,.06), 0 4px 14px -6px rgba(0,0,0,.5);
+}
+.field{margin-bottom:14px;}
+.field label{
+display:block; font-size:12px; font-weight:600; letter-spacing:.4px;
+color:var(--muted); margin-bottom:7px; text-transform:uppercase;
+}
+.field-shell{position:relative; display:flex; align-items:center;}
+.field-shell svg{position:absolute; left:14px; width:17px; height:17px; color:var(--muted-dim); pointer-events:none;}
+.field input{
+width:100%; background:rgba(0,0,0,0.25);
+border:1px solid var(--line); border-radius:13px;
+padding:13px 14px 13px 42px; font-family:'Inter'; font-size:15px; color:var(--ink);
+transition:.18s ease; outline:none;
+}
+.field input::placeholder{color:var(--muted-dim);}
+.field input:focus{
+border-color: var(--coral);
+box-shadow: 0 0 0 3px rgba(255,92,122,0.18);
+background:rgba(0,0,0,0.35);
+}
+.toggle-eye{
+position:absolute; right:12px; background:none; border:0; cursor:pointer;
+color:var(--muted-dim); padding:6px; display:flex;
+}
+.toggle-eye:hover{color:var(--muted);}
+.toggle-eye svg{width:17px;height:17px;}
+.row-between{display:flex; justify-content:space-between; align-items:center; margin:2px 0 20px;}
+.remember{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--muted);}
+.remember input{accent-color:var(--coral); width:15px; height:15px;}
+.forgot{font-size:13px; color:var(--gold); text-decoration:none; font-weight:600;}
+.forgot:hover{text-decoration:underline;}
+.btn-primary{
+width:100%; border:0; border-radius:14px; padding:14.5px 0;
+font-family:'Inter'; font-size:15.5px; font-weight:700; letter-spacing:.2px;
+color:#1a0f24; cursor:pointer;
+background:linear-gradient(155deg,#ffce85,var(--gold));
+box-shadow: 0 10px 26px -10px rgba(232,179,77,0.55), inset 0 1px 0 rgba(255,255,255,.35);
+transition:.18s ease;
+}
+.btn-primary:hover{transform:translateY(-1px); box-shadow:0 14px 30px -10px rgba(232,179,77,0.7), inset 0 1px 0 rgba(255,255,255,.35);}
+.btn-primary:active{transform:translateY(0);}
+.divider{display:flex; align-items:center; gap:12px; margin:22px 0; color:var(--muted-dim); font-size:12px;}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line);}
+.btn-secondary{
+width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
+border:1px solid var(--line); border-radius:14px; padding:13px 0;
+background:rgba(255,255,255,0.02); color:var(--ink);
+font-family:'Inter'; font-size:14.5px; font-weight:600; cursor:pointer;
+transition:.18s ease;
+}
+.btn-secondary:hover{background:rgba(255,255,255,0.05); border-color:rgba(255,255,255,0.16);}
+.btn-secondary svg{width:18px;height:18px;}
+.gender-row{display:flex; gap:10px;}
+.gender-opt{
+flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;
+border:1px solid var(--line); border-radius:13px; padding:12px 8px;
+background:rgba(0,0,0,0.25); cursor:pointer; transition:.18s ease; position:relative;
+}
+.gender-opt input{position:absolute; opacity:0; width:0; height:0;}
+.gender-opt svg{width:22px; height:22px; color:var(--muted-dim); transition:.18s ease;}
+.gender-opt{font-size:12.5px; font-weight:600; color:var(--muted);}
+.gender-opt:has(input:checked){
+border-color: var(--coral);
+background:rgba(255,92,122,0.1);
+color:var(--ink);
+box-shadow: 0 0 0 3px rgba(255,92,122,0.12);
+}
+.gender-opt:has(input:checked) svg{color:var(--coral);}
+.switch-line{text-align:center; margin-top:22px; font-size:13.5px; color:var(--muted);}
+.switch-line a{color:var(--coral); font-weight:700; text-decoration:none;}
+.switch-line a:hover{text-decoration:underline;}
+.terms{font-size:11.5px; color:var(--muted-dim); text-align:center; margin-top:18px; line-height:1.5;}
+.terms a{color:var(--muted); text-decoration:underline;}
+@media (max-width:380px){
+.card{padding:24px 20px 22px;}
+.brand h1{font-size:24px;}
+}
+</style>
+</head>
+<body>
+<div class="ambient" id="ambient"></div>
+<div class="wrap">
+<div class="brand">
+<div class="brand-mark">
+<svg viewBox="0 0 24 24" fill="none">
+<path d="M12 21s-7.5-4.6-10-9.3C.4 8.4 2 5 5.4 5c2 0 3.4 1 4.6 2.6C11.2 6 12.6 5 14.6 5 18 5 19.6 8.4 18 11.7 15.5 16.4 12 21 12 21z"
+fill="#FF5C7A" stroke="#E8B34D" stroke-width="0.6"/>
+</svg>
+</div>
+<h1>Kiss.az</h1>
+<p>Hesabına daxil ol və oyuna davam et</p>
+</div>
+<div class="card">
+<div class="tabs">
+<button class="active" id="tab-login" onclick="setTab('login')">Giriş</button>
+<button id="tab-register" onclick="setTab('register')">Qeydiyyat</button>
+</div>
+<!-- LOGIN FORM -->
+<form id="form-login">
+<div class="field">
+<label>İstifadəçi adı</label>
+<div class="field-shell">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+<input type="text" placeholder="istifadeci adi veya ID" autocomplete="username" required>
+</div>
+</div>
+<div class="field">
+<label>Şifrə</label>
+<div class="field-shell">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+<input id="pw-login" type="password" placeholder="••••••••" autocomplete="current-password" required style="padding-right:42px;">
+<button type="button" class="toggle-eye" onclick="toggleEye('pw-login', this)">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
+</div>
+</div>
+<div class="row-between">
+<label class="remember"><input type="checkbox"> Məni xatırla</label>
+<a href="#" class="forgot">Şifrəni unutmusan?</a>
+</div>
+<button type="submit" class="btn-primary">Daxil ol</button>
+<div class="divider">və ya</div>
+<button type="button" class="btn-secondary" id="google-btn-login" onclick="triggerGoogleLogin()">
+<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.2c0-.8-.1-1.4-.2-2H12v3.9h5.9c-.1.9-.7 2.2-1.9 3l3.1 2.4c1.8-1.7 2.9-4.2 2.9-7.3z"/><path fill="#34A853" d="M12 23c2.6 0 4.8-.9 6.4-2.4l-3.1-2.4c-.9.6-2 .9-3.3.9-2.5 0-4.7-1.7-5.4-4h-3.2v2.5C4.7 20.6 8.1 23 12 23z"/><path fill="#FBBC05" d="M6.6 15.1c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V8.6H3.4A11 11 0 0 0 2.3 13c0 1.6.4 3.1 1.1 4.4l3.2-2.3z"/><path fill="#EA4335" d="M12 6.6c1.4 0 2.7.5 3.7 1.4l2.7-2.7C16.8 3.5 14.6 2.5 12 2.5c-3.9 0-7.3 2.4-8.6 5.6l3.2 2.5C7.3 8.3 9.5 6.6 12 6.6z"/></svg>
+Google ilə davam et
+</button>
+<button type="button" class="btn-secondary" style="margin-top:10px;" onclick="triggerFacebookLogin()">
+<svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.07C24 5.4 18.6 0 12 0S0 5.4 0 12.07C0 18.1 4.4 23.1 10.1 24v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.9v2.2h3.3l-.5 3.5h-2.8V24C19.6 23.1 24 18.1 24 12.07z"/></svg>
+Facebook ilə davam et
+</button>
+<div id="telegram-login-container" style="display:none; justify-content:center; margin-top:10px;"></div>
+<div id="g_id_onload_hidden" style="position:absolute; opacity:0; pointer-events:none; height:0; overflow:hidden;"></div>
+</form>
+<!-- REGISTER FORM -->
+<form id="form-register" style="display:none;">
+<div class="field">
+<label>İstifadəçi adı</label>
+<div class="field-shell">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+<input type="text" placeholder="istifadəçi adı seç" required>
+</div>
+</div>
+<div class="field">
+<label>Şifrə</label>
+<div class="field-shell">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+<input id="pw-reg" type="password" placeholder="ən azı 6 simvol" required style="padding-right:42px;">
+<button type="button" class="toggle-eye" onclick="toggleEye('pw-reg', this)">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
+</div>
+</div>
+<div class="field">
+<label>Şifrəni təsdiqlə</label>
+<div class="field-shell">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+<input id="pw-reg2" type="password" placeholder="şifrəni təkrar yaz" required style="padding-right:42px;">
+<button type="button" class="toggle-eye" onclick="toggleEye('pw-reg2', this)">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+</button>
+</div>
+</div>
+<div class="field" style="margin-bottom:20px;">
+<label>Cinsiyyət</label>
+<div class="gender-row">
+<label class="gender-opt" data-val="male">
+<input type="radio" name="gender" value="male" checked>
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="10" cy="14" r="6"/><path d="M14.5 9.5L21 3M21 3h-5.5M21 3v5.5"/></svg>
+Kişi
+</label>
+<label class="gender-opt" data-val="female">
+<input type="radio" name="gender" value="female">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M12 15v6M9 19h6"/></svg>
+Qadın
+</label>
+</div>
+</div>
+<button type="submit" class="btn-primary">Hesab yarat</button>
+<div class="divider">və ya</div>
+<button type="button" class="btn-secondary" onclick="triggerGoogleLogin()">
+<svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.5 12.2c0-.8-.1-1.4-.2-2H12v3.9h5.9c-.1.9-.7 2.2-1.9 3l3.1 2.4c1.8-1.7 2.9-4.2 2.9-7.3z"/><path fill="#34A853" d="M12 23c2.6 0 4.8-.9 6.4-2.4l-3.1-2.4c-.9.6-2 .9-3.3.9-2.5 0-4.7-1.7-5.4-4h-3.2v2.5C4.7 20.6 8.1 23 12 23z"/><path fill="#FBBC05" d="M6.6 15.1c-.2-.6-.3-1.3-.3-2s.1-1.4.3-2V8.6H3.4A11 11 0 0 0 2.3 13c0 1.6.4 3.1 1.1 4.4l3.2-2.3z"/><path fill="#EA4335" d="M12 6.6c1.4 0 2.7.5 3.7 1.4l2.7-2.7C16.8 3.5 14.6 2.5 12 2.5c-3.9 0-7.3 2.4-8.6 5.6l3.2 2.5C7.3 8.3 9.5 6.6 12 6.6z"/></svg>
+Google ilə davam et
+</button>
+<button type="button" class="btn-secondary" style="margin-top:10px;" onclick="triggerFacebookLogin()">
+<svg viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.07C24 5.4 18.6 0 12 0S0 5.4 0 12.07C0 18.1 4.4 23.1 10.1 24v-8.4H7.1v-3.5h3V9.4c0-3 1.8-4.6 4.5-4.6 1.3 0 2.6.2 2.6.2v2.9h-1.5c-1.5 0-1.9.9-1.9 1.9v2.2h3.3l-.5 3.5h-2.8V24C19.6 23.1 24 18.1 24 12.07z"/></svg>
+Facebook ilə davam et
+</button>
+<div id="telegram-login-container-reg" style="display:none; justify-content:center; margin-top:10px;"></div>
+</form>
+<div class="switch-line" id="switch-login">
+Hesabın yoxdur? <a href="#" onclick="setTab('register');return false;">Qeydiyyatdan keç</a>
+</div>
+<div class="switch-line" id="switch-register" style="display:none;">
+Artıq hesabın var? <a href="#" onclick="setTab('login');return false;">Daxil ol</a>
+</div>
+</div>
+<div class="terms">
+Davam etməklə <a href="#">İstifadə şərtləri</a> və <a href="#">Məxfilik siyasəti</a>ni qəbul edirsən
+</div>
+</div>
+<script>
+function setTab(which){
+const isLogin = which === 'login';
+document.getElementById('tab-login').classList.toggle('active', isLogin);
+document.getElementById('tab-register').classList.toggle('active', !isLogin);
+document.getElementById('form-login').style.display = isLogin ? 'block' : 'none';
+document.getElementById('form-register').style.display = isLogin ? 'none' : 'block';
+document.getElementById('switch-login').style.display = isLogin ? 'block' : 'none';
+document.getElementById('switch-register').style.display = isLogin ? 'none' : 'block';
+}
+function toggleEye(id, btn){
+const input = document.getElementById(id);
+const isPw = input.type === 'password';
+input.type = isPw ? 'text' : 'password';
+if (btn) btn.style.opacity = isPw ? '1' : '.55';
+if (btn) btn.style.color = isPw ? 'var(--gold)' : '';
+}
+// ambient floating hearts
+const ambient = document.getElementById('ambient');
+const HEART = '❤';
+for(let i=0;i<9;i++){
+const s = document.createElement('span');
+s.textContent = HEART;
+s.style.left = (Math.random()*100) + '%';
+s.style.setProperty('--dx', (Math.random()*60-30)+'px');
+s.style.animationDuration = (14 + Math.random()*10) + 's';
+s.style.animationDelay = (Math.random()*14) + 's';
+s.style.fontSize = (10 + Math.random()*10) + 'px';
+ambient.appendChild(s);
+}
+function getDeviceId() {
+  let id = localStorage.getItem('deviceId');
+  if (!id) {
+    id = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2) + '_' + Math.random().toString(36).slice(2);
+    localStorage.setItem('deviceId', id);
+  }
+  return id;
+}
+document.getElementById('form-login').addEventListener('submit', async e=>{
+e.preventDefault();
+const btn = e.target.querySelector('.btn-primary');
+const username = e.target.querySelector('input[type=text]').value.trim();
+const password = document.getElementById('pw-login').value;
+btn.textContent = 'Yoxlanılır...'; btn.disabled = true;
+try {
+const res = await fetch('/api/login', {
+method: 'POST',
+headers: {'Content-Type':'application/json'},
+body: JSON.stringify({ username, password, device_id: getDeviceId() })
+});
+const data = await res.json();
+if (!res.ok) {
+if (data.error === 'user_banned') alert('Hesabınız bloklanıb.');
+else if (data.error === 'device_already_used') alert('Bu telefon/kompüterdə artıq başqa bir hesab qeydiyyatdan keçib. Bir cihazda yalnız bir hesab istifadə oluna bilər.');
+else alert('İstifadəçi adı və ya şifrə yanlışdır.');
+btn.textContent = 'Daxil ol'; btn.disabled = false;
+return;
+}
+localStorage.setItem('authToken', data.token);
+document.cookie = 'authToken=' + data.token + '; path=/; max-age=' + (60*60*24*30);
+window.location.href = '/profile-v2';
+} catch (err) {
+alert('Bağlantı xətası, yenidən cəhd edin.');
+btn.textContent = 'Daxil ol'; btn.disabled = false;
+}
+});
+document.getElementById('form-register').addEventListener('submit', async e=>{
+e.preventDefault();
+const p1 = document.getElementById('pw-reg').value;
+const p2 = document.getElementById('pw-reg2').value;
+if(p1 !== p2){ alert('Şifrələr uyğun gəlmir'); return; }
+const username = e.target.querySelector('input[type=text]').value.trim();
+const gender = e.target.querySelector('input[name=gender]:checked').value;
+const btn = e.target.querySelector('.btn-primary');
+btn.textContent = 'Hesab yaradılır...'; btn.disabled = true;
+try {
+const res = await fetch('/api/register', {
+method: 'POST',
+headers: {'Content-Type':'application/json'},
+body: JSON.stringify({ username, password: p1, gender, device_id: getDeviceId() })
+});
+const data = await res.json();
+if (!res.ok) {
+if (data.error === 'device_already_used') alert('Bu telefon/kompüterdə artıq başqa bir hesab qeydiyyatdan keçib. Bir cihazda yalnız bir hesab yaradıla bilər.');
+else alert(data.error === 'username_taken' ? 'Bu istifadəçi adı artıq mövcuddur.' : 'Qeydiyyat alınmadı, yenidən cəhd edin.');
+btn.textContent = 'Hesab yarat'; btn.disabled = false;
+return;
+}
+// avtomatik daxil ol
+const loginRes = await fetch('/api/login', {
+method: 'POST',
+headers: {'Content-Type':'application/json'},
+body: JSON.stringify({ username, password: p1, device_id: getDeviceId() })
+});
+const loginData = await loginRes.json();
+if (loginRes.ok) {
+localStorage.setItem('authToken', loginData.token);
+document.cookie = 'authToken=' + loginData.token + '; path=/; max-age=' + (60*60*24*30);
+window.location.href = '/profile-v2';
+} else {
+alert('Hesab yaradıldı! İndi daxil ola bilərsiniz.');
+setTab('login');
+}
+} catch (err) {
+alert('Bağlantı xətası, yenidən cəhd edin.');
+btn.textContent = 'Hesab yarat'; btn.disabled = false;
+}
+});
+// Google Sign-In
+let googleInited = false;
+function initGoogle() {
+if (googleInited || !window.google) return;
+googleInited = true;
+google.accounts.id.initialize({
+client_id: '47413688547-qug79v2eb2ld23hk1siq3eo4gdkbkoql.apps.googleusercontent.com',
+callback: handleGoogleCredential
+});
+}
+async function handleGoogleCredential(response) {
+try {
+const res = await fetch('/api/google-login', {
+method: 'POST',
+headers: {'Content-Type':'application/json'},
+body: JSON.stringify({ credential: response.credential, device_id: localStorage.getItem('deviceId') })
+});
+const data = await res.json();
+if (!res.ok || !data.token) { alert('Google girişi alınmadı, yenidən cəhd edin.'); return; }
+localStorage.setItem('authToken', data.token);
+document.cookie = 'authToken=' + data.token + '; path=/; max-age=' + (60*60*24*30);
+window.location.href = '/profile-v2';
+} catch (err) {
+alert('Bağlantı xətası, yenidən cəhd edin.');
+}
+}
+function triggerGoogleLogin() {
+if (!window.google) { alert('Google yüklənir, bir az gözləyin və yenidən cəhd edin.'); return; }
+initGoogle();
+google.accounts.id.prompt();
+}
+// Telegram Login Widget
+function loadTelegramWidget() {
+['telegram-login-container', 'telegram-login-container-reg'].forEach(id => {
+const container = document.getElementById(id);
+if (!container || container.dataset.loaded) return;
+container.dataset.loaded = '1';
+const s = document.createElement('script');
+s.src = 'https://telegram.org/js/telegram-widget.js?22';
+s.setAttribute('data-telegram-login', 'ureyimsen_bot');
+s.setAttribute('data-size', 'large');
+s.setAttribute('data-radius', '13');
+s.setAttribute('data-onauth', 'onTelegramAuth(user)');
+s.setAttribute('data-request-access', 'write');
+container.appendChild(s);
+});
+}
+window.onTelegramAuth = async function(user) {
+try {
+const res = await fetch('/api/telegram-login', {
+method: 'POST',
+headers: {'Content-Type':'application/json'},
+body: JSON.stringify(Object.assign({}, user, { device_id: localStorage.getItem('deviceId') }))
+});
+const data = await res.json();
+if (!res.ok || !data.token) { alert('Telegram girişi alınmadı, yenidən cəhd edin.'); return; }
+localStorage.setItem('authToken', data.token);
+document.cookie = 'authToken=' + data.token + '; path=/; max-age=' + (60*60*24*30);
+window.location.href = '/profile-v2';
+} catch (err) {
+alert('Bağlantı xətası, yenidən cəhd edin.');
+}
+};
+window.addEventListener('load', () => {
+setTimeout(initGoogle, 400);
+setTimeout(loadTelegramWidget, 400);
+});
+// Facebook Login
+window.fbAsyncInit = function() {
+FB.init({ appId: '1957873674903912', cookie: true, xfbml: false, version: 'v21.0' });
+};
+function triggerFacebookLogin() {
+if (!window.FB) { alert('Facebook yüklənir, bir az gözləyin və yenidən cəhd edin.'); return; }
+FB.login(function(response) {
+if (response.authResponse) {
+handleFacebookAuth(response.authResponse.accessToken);
+}
+}, { scope: 'public_profile' });
+}
+async function handleFacebookAuth(accessToken) {
+try {
+const res = await fetch('/api/facebook-login', {
+method: 'POST',
+headers: {'Content-Type':'application/json'},
+body: JSON.stringify({ access_token: accessToken, device_id: localStorage.getItem('deviceId') })
+});
+const data = await res.json();
+if (!res.ok || !data.token) { alert('Facebook girişi alınmadı, yenidən cəhd edin.'); return; }
+localStorage.setItem('authToken', data.token);
+document.cookie = 'authToken=' + data.token + '; path=/; max-age=' + (60*60*24*30);
+window.location.href = '/profile-v2';
+} catch (err) {
+alert('Bağlantı xətası, yenidən cəhd edin.');
+}
+}
+</script>
+</body>
+</html>

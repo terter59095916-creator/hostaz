@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesajlar</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #f0f2f5; color: #1a1a1a; }
+  .header { background: white; padding: 12px 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .header a { color: #ff7a00; text-decoration: none; font-weight: bold; margin-right: 16px; }
+  .container { display: flex; max-width: 900px; margin: 0 auto; height: calc(100vh - 60px); }
+  .convo-list { width: 260px; background: white; overflow-y: auto; border-right: 1px solid #eee; }
+  .convo-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f5f5f5; }
+  .convo-item:hover, .convo-item.active { background: #fff3e6; }
+  .convo-avatar { width: 40px; height: 40px; border-radius: 50%; background: #ff7a00; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; object-fit: cover; }
+  .convo-name { font-weight: bold; font-size: 14px; }
+  .convo-last { font-size: 12px; color: #888; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chat-area { flex: 1; display: flex; flex-direction: column; background: white; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 16px; }
+  .msg { max-width: 65%; padding: 8px 12px; border-radius: 12px; margin-bottom: 8px; font-size: 14px; }
+  .msg.mine { background: #ff7a00; color: white; margin-left: auto; }
+  .msg.theirs { background: #eee; }
+  .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #eee; }
+  .chat-input input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 20px; }
+  .chat-input button { background: #ff7a00; color: white; border: none; padding: 8px 18px; border-radius: 20px; cursor: pointer; }
+@media (max-width: 700px) {
+    body { height: 100vh; overflow: hidden; }
+    .container { position: fixed; top: 60px; left: 0; right: 0; bottom: 0; height: auto; }
+    .chat-area { position: relative; height: 100%; }
+    .chat-input { position: sticky; bottom: 0; background: white; z-index: 5; }
+    .container { flex-direction: column; height: auto; }
+    .convo-list { width: 100%; max-height: 160px; }
+    .chat-area { height: calc(100vh - 220px); }
+    .msg { max-width: 85%; font-size: 15px; }
+    .chat-messages { padding: 10px; }
+    .header { padding: 10px 12px; }
+    .header a { margin-right: 10px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+  <div class="header"><a href="/feed">Lent</a><a href="/game">Oyun</a><a href="/friends">Dostlar</a></div>
+  <div class="container">
+    <div class="convo-list" id="convoList"></div>
+    <div class="chat-area">
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input"><input type="text" id="msgInput" placeholder="Mesaj yaz..." onkeypress="if(event.key==='Enter')sendMsg()"><button onclick="sendMsg()">Gonder</button></div>
+    </div>
+  </div>
+<script>
+  const token = localStorage.getItem('authToken');
+  if (!token) window.location.href = '/login';
+  let currentChatId = null;
+  const urlParams = new URLSearchParams(window.location.search);
+  const withParam = urlParams.get('with');
+  async function apiCall(url, method, body) {
+    const res = await fetch(url, { method: method || 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }, body: body ? JSON.stringify(body) : undefined });
+    return res.json();
+  }
+  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+  async function loadConvos() {
+    const convos = await apiCall('/api/messages/conversations');
+    document.getElementById('convoList').innerHTML = convos.map(c => {
+      const initial = (c.display_name || c.username || '?')[0].toUpperCase();
+      const avatarHtml = c.photo_url ? ('<img class="convo-avatar" src="' + c.photo_url + '">') : ('<div class="convo-avatar">' + initial + '</div>');
+      return '<div class="convo-item" onclick="openChat(' + c.id + ')">' + avatarHtml + '<div><div class="convo-name">' + escapeHtml(c.display_name || c.username) + '</div><div class="convo-last">' + escapeHtml(c.last_text) + '</div></div></div>';
+    }).join('');
+    if (withParam) openChat(Number(withParam));
+  }
+  async function openChat(userId) {
+    currentChatId = userId;
+    const msgs = await apiCall('/api/messages/' + userId);
+    document.getElementById('chatMessages').innerHTML = msgs.map(m =>
+      '<div class="msg ' + (m.sender_id === userId ? 'theirs' : 'mine') + '">' + escapeHtml(m.text) + '</div>'
+    ).join('');
+    document.getElementById('chatMessages').scrollTop = 999999;
+  }
+  async function sendMsg() {
+    if (!currentChatId) return;
+    const input = document.getElementById('msgInput');
+    const text = input.value;
+    if (!text.trim()) return;
+    await apiCall('/api/messages/' + currentChatId, 'POST', { text });
+    input.value = '';
+    openChat(currentChatId);
+  }
+  loadConvos();
+  setInterval(() => {
+    if (currentChatId) openChat(currentChatId);
+    loadConvos();
+  }, 3000);
+</script>
+</body>
+</html>

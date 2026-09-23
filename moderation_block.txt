@@ -1,0 +1,79 @@
+} else if (msg.type === 'toggle_mic') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser || !stream.seats.has(wsUser.id)) return;
+    const seat = stream.seats.get(wsUser.id);
+    seat.muted = Boolean(msg.muted);
+    const payload = { type: 'live_mic_state', user_id: String(wsUser.id), muted: seat.muted };
+    stream.seats.forEach(s => { if (s.userId !== wsUser.id) try { s.ws.send(encodeMessage(Object.assign({}, payload, { packet: s.ws.packetCounter=(s.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+    stream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, payload, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+} else if (msg.type === 'block_user') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser || stream.hostId !== wsUser.id) return;
+    if (!stream.blockedUsers) stream.blockedUsers = new Set();
+    const targetId = Number(msg.target_user_id);
+    stream.blockedUsers.add(targetId);
+    if (stream.seats.has(targetId)) {
+      const seat = stream.seats.get(targetId);
+      stream.seats.delete(targetId);
+      try { seat.ws.send(encodeMessage({ type: 'live_blocked', stream_id: stream.id, packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 })); } catch(e) {}
+      stream.seats.forEach(s => { try { s.ws.send(encodeMessage({ type: 'live_seat_left', user_id: String(targetId), packet: s.ws.packetCounter=(s.ws.packetCounter||1000)+1 })); } catch(e) {} });
+    }
+    stream.viewers.forEach((uid, vws) => {
+      if (Number(uid) === targetId) {
+        stream.viewers.delete(vws);
+        try { vws.send(encodeMessage({ type: 'live_blocked', stream_id: stream.id, packet: vws.packetCounter=(vws.packetCounter||1000)+1 })); } catch(e) {}
+      }
+    });
+    console.log('WS: istifadeci canli yayimdan blok edildi - stream=' + stream.id + ' target=' + targetId);
+} else if (msg.type === 'unblock_user') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser || stream.hostId !== wsUser.id) return;
+    if (stream.blockedUsers) stream.blockedUsers.delete(Number(msg.target_user_id));
+} else if (msg.type === 'make_moderator') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser || stream.hostId !== wsUser.id) return;
+    if (!stream.moderators) stream.moderators = new Set();
+    stream.moderators.add(Number(msg.target_user_id));
+    const targetWs = userIdToWs.get(Number(msg.target_user_id));
+    if (targetWs) try { targetWs.send(encodeMessage({ type: 'live_made_moderator', stream_id: stream.id, packet: targetWs.packetCounter=(targetWs.packetCounter||1000)+1 })); } catch(e) {}
+    console.log('WS: moderator tayin edildi - stream=' + stream.id + ' target=' + msg.target_user_id);
+} else if (msg.type === 'remove_moderator') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser || stream.hostId !== wsUser.id) return;
+    if (stream.moderators) stream.moderators.delete(Number(msg.target_user_id));
+} else if (msg.type === 'kick_user') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser) return;
+    const isAllowed = stream.hostId === wsUser.id || (stream.moderators && stream.moderators.has(wsUser.id));
+    if (!isAllowed) return;
+    const targetId = Number(msg.target_user_id);
+    if (targetId === stream.hostId) return;
+    if (stream.seats.has(targetId)) {
+      const seat = stream.seats.get(targetId);
+      stream.seats.delete(targetId);
+      try { seat.ws.send(encodeMessage({ type: 'live_kicked', stream_id: stream.id, packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 })); } catch(e) {}
+      stream.seats.forEach(s => { try { s.ws.send(encodeMessage({ type: 'live_seat_left', user_id: String(targetId), packet: s.ws.packetCounter=(s.ws.packetCounter||1000)+1 })); } catch(e) {} });
+      stream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage({ type: 'live_seat_left', user_id: String(targetId), packet: vws.packetCounter=(vws.packetCounter||1000)+1 })); } catch(e) {} });
+    } else {
+      stream.viewers.forEach((uid, vws) => {
+        if (Number(uid) === targetId) {
+          stream.viewers.delete(vws);
+          try { vws.send(encodeMessage({ type: 'live_kicked', stream_id: stream.id, packet: vws.packetCounter=(vws.packetCounter||1000)+1 })); } catch(e) {}
+        }
+      });
+    }
+    console.log('WS: istifadeci canli yayimdan qovuldu - stream=' + stream.id + ' target=' + targetId);
+} else if (msg.type === 'mute_user') {
+    const stream = liveStreamsMap.get(Number(msg.stream_id));
+    if (!stream || !wsUser) return;
+    const isAllowed = stream.hostId === wsUser.id || (stream.moderators && stream.moderators.has(wsUser.id));
+    if (!isAllowed) return;
+    const targetId = Number(msg.target_user_id);
+    const seat = stream.seats.get(targetId);
+    if (!seat) return;
+    seat.muted = true;
+    try { seat.ws.send(encodeMessage({ type: 'live_force_muted', stream_id: stream.id, packet: seat.ws.packetCounter=(seat.ws.packetCounter||1000)+1 })); } catch(e) {}
+    const payload = { type: 'live_mic_state', user_id: String(targetId), muted: true };
+    stream.seats.forEach(s => { if (s.userId !== targetId) try { s.ws.send(encodeMessage(Object.assign({}, payload, { packet: s.ws.packetCounter=(s.ws.packetCounter||1000)+1 }))); } catch(e) {} });
+    stream.viewers.forEach((uid, vws) => { try { vws.send(encodeMessage(Object.assign({}, payload, { packet: vws.packetCounter=(vws.packetCounter||1000)+1 }))); } catch(e) {} });
+    console.log('WS: istifadeci susduruldu - stream=' + stream.id + ' target=' + targetId);

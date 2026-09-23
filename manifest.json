@@ -1,0 +1,17 @@
+{
+  "name": "Qoca",
+  "short_name": "Qoca",
+  "start_url": "/login",
+  "display": "standalone",
+  "background_color": "#0a0806",
+  "theme_color": "#0a0806",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

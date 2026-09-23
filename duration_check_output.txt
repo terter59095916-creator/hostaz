@@ -1,0 +1,1 @@
+"  }\n      if (this.player.getDuration() === 0) {\n        (_a = this.onError) === null || _a === void 0 ? void 0 : _a.call(this, ERR_ZERO_DURATION);\n      }\n      (_b = this.onPlayerReady) === null || _b === void 0 ? void 0 : _b.call(this);\n      if (this.autop"
